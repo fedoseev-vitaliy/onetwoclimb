@@ -1,0 +1,44 @@
+swagger: '2.0'
+info:
+  title: OneTwoClimb API
+  version: '1.0'
+basePath: /api/v1.0
+schemes:
+  - http
+produces:
+  - application/json
+
+paths:
+  /colors:
+    get:
+      summary: get board colors
+      operationId: boardColors
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              colors:
+                type: array
+                items:
+                  $ref: "#/definitions/Color"
+            required:
+              - colors
+
+definitions:
+  Color:
+    description: color object
+    type: object
+    properties:
+      name:
+        type: string
+        description: item name
+      colorHex:
+        type: string
+        description: color in hex
+    required:
+      - name
+      - colorHex
+
+
