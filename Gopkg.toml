@@ -15,10 +15,6 @@ required = [
   version = "1.0.3"
 
 [[override]]
-  version = "0.17.0"
-  name = "github.com/go-openapi/runtime"
-
-[[override]]
   version = "v0.17.0"
   name = "github.com/go-swagger/go-swagger"
 
