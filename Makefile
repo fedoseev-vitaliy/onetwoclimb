@@ -86,7 +86,8 @@ swagger: swagger-clean swagger-build-binary
 	   --exclude-main \
 	   --flag-strategy=pflag \
 	   --default-scheme=http \
-	   --target=$(BASEPATH)/internal/server
+	   --target=$(BASEPATH)/internal/server \
+	   -q
 
 swagger-build-binary:
 ifeq ("$(wildcard ./bin/$(SWAGGER))","")
