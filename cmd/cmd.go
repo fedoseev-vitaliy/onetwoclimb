@@ -6,6 +6,7 @@ import (
 )
 
 var config Config
+
 var l = logrus.New()
 
 func init() {

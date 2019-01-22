@@ -27,15 +27,52 @@ GREEN_COLOR   = "\033[0;32m"
 PURPLE_COLOR  = "\033[0;35m"
 DEFAULT_COLOR = "\033[m"
 
+all: clean fmt swagger build lint test
+
+help:
+	@echo 'Usage: make <TARGETS> ... <OPTIONS>'
+	@echo ''
+	@echo 'Available targets are:'
+	@echo ''
+	@echo '    help               Show this help screen.'
+	@echo '    clean              Remove binary.'
+	@echo '    test               Run unit tests.'
+	@echo '    lint               Run all linters including vet and gosec and others'
+	@echo '    fmt                Run gofmt on package sources.'
+	@echo '    build              Compile packages and dependencies.'
+	@echo '    version            Print Go version.'
+	@echo '    swagger            Generate swagger models and server'
+	@echo '    swaggerdoc         Serve swagger doc'
+	@echo ''
+	@echo 'Targets run by default are: clean fmt lint test.'
+	@echo ''
+
 clean:
 	@echo $(GREEN_COLOR)[clean]$(DEFAULT_COLOR)
 	@$(GOCLEAN)
 	@if [ -f $(BINARY) ] ; then rm $(BINARY) ; fi
 	@rm -rf ./bin
 
+lint:
+	@echo $(GREEN_COLOR)[lint]$(DEFAULT_COLOR)
+	@$(GORUN) ./vendor/github.com/golangci/golangci-lint/cmd/golangci-lint/main.go run \
+	--no-config --disable=errcheck --enable=gosec --enable=prealloc ./...
+
+test:
+	@echo $(GREEN_COLOR)[test]$(DEFAULT_COLOR)
+	@$(GOTEST) -race $(PKGS)
+
 fmt:
 	@echo $(GREEN_COLOR)[format]$(DEFAULT_COLOR)
 	@$(GOFMT) $(PKGS)
+
+build:
+	@echo $(GREEN_COLOR)[build]$(DEFAULT_COLOR)
+	$(GOBUILD) -o $(BINARY)
+
+version:
+	@echo $(GREEN_COLOR)[version]$(DEFAULT_COLOR)
+	@$(GOCMD) version
 
 swagger-clean:
 	@echo $(GREEN_COLOR)[swagger cleanup]$(DEFAULT_COLOR)

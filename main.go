@@ -1,4 +1,4 @@
-package onetwoclimb
+package main
 
 import "github.com/onetwoclimb/cmd"
 
