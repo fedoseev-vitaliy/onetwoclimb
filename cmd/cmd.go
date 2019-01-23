@@ -4,7 +4,9 @@ import (
 	"flag"
 
 	"github.com/go-openapi/loads"
+	"github.com/go-openapi/runtime/middleware"
 	"github.com/onetwoclimb/internal/server/handler"
+	serverMW "github.com/onetwoclimb/internal/server/middleware"
 	"github.com/onetwoclimb/internal/server/restapi"
 	"github.com/onetwoclimb/internal/server/restapi/operations"
 	"github.com/pkg/errors"
@@ -51,6 +53,8 @@ var cmd = &cobra.Command{
 		server.WriteTimeout = config.WriteTimeout
 
 		handler.New().ConfigureHandlers(api)
+
+		server.SetHandler(serverMW.PanicRecovery(serverMW.Logger(api.Serve(middleware.PassthroughBuilder))))
 
 		// serve API
 		if err := server.Serve(); err != nil {

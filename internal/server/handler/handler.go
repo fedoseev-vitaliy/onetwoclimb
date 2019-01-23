@@ -2,10 +2,13 @@ package handler
 
 import (
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/sirupsen/logrus"
 
 	"github.com/onetwoclimb/internal/server/models"
 	"github.com/onetwoclimb/internal/server/restapi/operations"
 )
+
+var l = logrus.New()
 
 type Handler struct {
 }
@@ -33,5 +36,6 @@ func (h *Handler) getColors() []*models.Color {
 }
 
 func (h *Handler) ConfigureHandlers(api *operations.OneTwoClimbAPI) {
+	api.Logger = l.Printf
 	api.BoardColorsHandler = operations.BoardColorsHandlerFunc(h.GetColorsHandler)
 }
