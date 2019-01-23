@@ -25,20 +25,40 @@ paths:
                   $ref: "#/definitions/Color"
             required:
               - colors
+        500:
+          description: >-
+            General server error.
+            Error codes:
+              - 4 Server error
+          schema:
+            $ref: "#/definitions/Error"
 
 definitions:
   Color:
     description: color object
     type: object
     properties:
+      id:
+        type: integer
+        description: color id
       name:
         type: string
         description: item name
-      colorHex:
+      hex:
         type: string
         description: color in hex
+      pinCode:
+        type: string
+        description: pin code name
+
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        description: internal status code
+      message:
+        type: string
     required:
-      - name
-      - colorHex
-
-
+      - code
+      - message

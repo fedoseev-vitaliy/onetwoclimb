@@ -9,6 +9,8 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
+
+	models "github.com/onetwoclimb/internal/server/models"
 )
 
 // BoardColorsOKCode is the HTTP code returned for type BoardColorsOK
@@ -47,6 +49,51 @@ func (o *BoardColorsOK) SetPayload(payload *BoardColorsOKBody) {
 func (o *BoardColorsOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+// BoardColorsInternalServerErrorCode is the HTTP code returned for type BoardColorsInternalServerError
+const BoardColorsInternalServerErrorCode int = 500
+
+/*BoardColorsInternalServerError General server error. Error codes:
+  - 4 Server error
+
+swagger:response boardColorsInternalServerError
+*/
+type BoardColorsInternalServerError struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewBoardColorsInternalServerError creates BoardColorsInternalServerError with default headers values
+func NewBoardColorsInternalServerError() *BoardColorsInternalServerError {
+
+	return &BoardColorsInternalServerError{}
+}
+
+// WithPayload adds the payload to the board colors internal server error response
+func (o *BoardColorsInternalServerError) WithPayload(payload *models.Error) *BoardColorsInternalServerError {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the board colors internal server error response
+func (o *BoardColorsInternalServerError) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *BoardColorsInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(500)
 	if o.Payload != nil {
 		payload := o.Payload
 		if err := producer.Produce(rw, payload); err != nil {

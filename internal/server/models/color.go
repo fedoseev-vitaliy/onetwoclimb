@@ -8,9 +8,7 @@ package models
 import (
 	strfmt "github.com/go-openapi/strfmt"
 
-	"github.com/go-openapi/errors"
 	"github.com/go-openapi/swag"
-	"github.com/go-openapi/validate"
 )
 
 // Color color object
@@ -18,47 +16,20 @@ import (
 type Color struct {
 
 	// color in hex
-	// Required: true
-	ColorHex *string `json:"colorHex"`
+	Hex string `json:"hex,omitempty"`
+
+	// color id
+	ID int64 `json:"id,omitempty"`
 
 	// item name
-	// Required: true
-	Name *string `json:"name"`
+	Name string `json:"name,omitempty"`
+
+	// pin code name
+	PinCode string `json:"pinCode,omitempty"`
 }
 
 // Validate validates this color
 func (m *Color) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.validateColorHex(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateName(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (m *Color) validateColorHex(formats strfmt.Registry) error {
-
-	if err := validate.Required("colorHex", "body", m.ColorHex); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *Color) validateName(formats strfmt.Registry) error {
-
-	if err := validate.Required("name", "body", m.Name); err != nil {
-		return err
-	}
-
 	return nil
 }
 

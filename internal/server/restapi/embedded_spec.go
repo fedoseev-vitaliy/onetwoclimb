@@ -52,6 +52,12 @@ func init() {
                 }
               }
             }
+          },
+          "500": {
+            "description": "General server error. Error codes:\n  - 4 Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -61,17 +67,37 @@ func init() {
     "Color": {
       "description": "color object",
       "type": "object",
-      "required": [
-        "name",
-        "colorHex"
-      ],
       "properties": {
-        "colorHex": {
+        "hex": {
           "description": "color in hex",
           "type": "string"
         },
+        "id": {
+          "description": "color id",
+          "type": "integer"
+        },
         "name": {
           "description": "item name",
+          "type": "string"
+        },
+        "pinCode": {
+          "description": "pin code name",
+          "type": "string"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "description": "internal status code",
+          "type": "integer"
+        },
+        "message": {
           "type": "string"
         }
       }
@@ -113,6 +139,12 @@ func init() {
                 }
               }
             }
+          },
+          "500": {
+            "description": "General server error. Error codes:\n  - 4 Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -122,17 +154,37 @@ func init() {
     "Color": {
       "description": "color object",
       "type": "object",
-      "required": [
-        "name",
-        "colorHex"
-      ],
       "properties": {
-        "colorHex": {
+        "hex": {
           "description": "color in hex",
           "type": "string"
         },
+        "id": {
+          "description": "color id",
+          "type": "integer"
+        },
         "name": {
           "description": "item name",
+          "type": "string"
+        },
+        "pinCode": {
+          "description": "pin code name",
+          "type": "string"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "description": "internal status code",
+          "type": "integer"
+        },
+        "message": {
           "type": "string"
         }
       }
