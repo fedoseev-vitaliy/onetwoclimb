@@ -1,5 +1,5 @@
 # onetwoclimb
-git s12Climb backend server
+12Climb backend server
 
 Prerequisites:
 1. Install go `https://golang.org/doc/install`
