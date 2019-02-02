@@ -12,6 +12,9 @@ GOFMT      = $(GOCMD) fmt
 GOGENERATE = $(GOCMD) generate
 GOTYPE     = $(GOCMD)type
 
+# Docker
+DOCKER_COMPOSE = docker-compose
+
 # Swagger
 SWAGGER = swagger
 
@@ -98,3 +101,13 @@ endif
 swaggerdoc: swagger
 	@echo $(GREEN_COLOR)[doc]$(DEFAULT_COLOR)
 	@$(SWAGGER) serve --flavor=swagger $(BASEPATH)/api/spec.yaml
+
+# start mySQL db in docker compose
+mysql-up:
+	@echo $(GREEN_COLOR)[start mysql]$(DEFAULT_COLOR)
+	@$(DOCKER_COMPOSE) -f $(BASEPATH)/docker/storages/mysql.yml up -d
+
+# stop mySQL db in docker compose
+mysql-down:
+	@echo $(GREEN_COLOR)[stop mysql]$(DEFAULT_COLOR)
+	@$(DOCKER_COMPOSE) -f $(BASEPATH)/docker/storages/mysql.yml down
