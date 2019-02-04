@@ -34,6 +34,7 @@ func (c *ServerConfig) Flags() *pflag.FlagSet {
 	f.StringVar(&c.Host, "host", "127.0.0.0", "ip")
 	f.IntVar(&c.Port, "port", 8081, "port")
 	f.StringVar(&c.Mode, "mode", ReleaseMode, "release,debug,test")
+	f.AddFlagSet(config.DB.Flags("mysql"))
 
 	f.DurationVar(&c.ReadTimeout, "readtimeout", time.Duration(0), "api read timeout (default 0s)")
 	f.DurationVar(&c.WriteTimeout, "writetimeout", time.Duration(0), "api write timeout (default 0s)")

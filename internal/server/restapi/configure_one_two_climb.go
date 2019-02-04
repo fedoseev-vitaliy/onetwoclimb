@@ -33,8 +33,14 @@ func configureAPI(api *operations.OneTwoClimbAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	api.BoardColorsHandler = operations.BoardColorsHandlerFunc(func(params operations.BoardColorsParams) middleware.Responder {
-		return middleware.NotImplemented("operation .BoardColors has not yet been implemented")
+	api.DelBoardColorHandler = operations.DelBoardColorHandlerFunc(func(params operations.DelBoardColorParams) middleware.Responder {
+		return middleware.NotImplemented("operation .DelBoardColor has not yet been implemented")
+	})
+	api.GetBoardColorsHandler = operations.GetBoardColorsHandlerFunc(func(params operations.GetBoardColorsParams) middleware.Responder {
+		return middleware.NotImplemented("operation .GetBoardColors has not yet been implemented")
+	})
+	api.PostBoardColorsHandler = operations.PostBoardColorsHandlerFunc(func(params operations.PostBoardColorsParams) middleware.Responder {
+		return middleware.NotImplemented("operation .PostBoardColors has not yet been implemented")
 	})
 
 	api.ServerShutdown = func() {}

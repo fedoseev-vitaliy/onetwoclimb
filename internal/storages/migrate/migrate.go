@@ -159,6 +159,8 @@ func GetMigrations() []*migrate.Migration {
 					pin_code VARCHAR(255) NOT NULL DEFAULT '',
 					hex VARCHAR(255) NOT NULL DEFAULT ''
 				)
+
+				
 			`},
 			Down: []string{`
 				DROP TABLE IF EXISTS colors CASCADE;

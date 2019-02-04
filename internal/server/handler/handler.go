@@ -19,25 +19,51 @@ func New(storage *storages.MySQLStorage) *Handler {
 	return &Handler{MySQL: storage}
 }
 
-func (h *Handler) GetColorsHandler(parameters operations.BoardColorsParams) middleware.Responder {
-	return operations.NewBoardColorsOK().WithPayload(&operations.BoardColorsOKBody{
-		Colors: h.getColors(),
+func (h *Handler) GetColorsHandler(params operations.GetBoardColorsParams) middleware.Responder {
+	colors, err := h.MySQL.GetColors()
+	if err != nil {
+		l.WithError(err).Error("failed to get colors")
+		return operations.NewGetBoardColorsInternalServerError()
+	}
+
+	res := make([]*models.Color, 0, len(colors))
+	for _, color := range colors {
+		res = append(res, &models.Color{
+			ID:      color.Id,
+			Name:    color.Name,
+			PinCode: color.PinCode,
+			Hex:     color.Hex,
+		})
+	}
+
+	return operations.NewGetBoardColorsOK().WithPayload(&operations.GetBoardColorsOKBody{
+		Colors: res,
 	})
 }
 
-func (h *Handler) getColors() []*models.Color {
-	return []*models.Color{
-		{ID: 1, Name: "start", PinCode: "001", Hex: "#0040ff"},
-		{ID: 2, Name: "finish", PinCode: "100", Hex: "#ff0000"},
-		{ID: 3, Name: "route", PinCode: "010", Hex: "#04ff00"},
-		{ID: 4, Name: "blank", PinCode: "000", Hex: ""},
-		{ID: 5, Name: "event_flash", PinCode: "", Hex: "#FFA726"},
-		{ID: 6, Name: "event_top", PinCode: "", Hex: "#008BA3"},
-		{ID: 7, Name: "event_zone", PinCode: "", Hex: "#00BCD4"},
+func (h *Handler) DeleteColorHandler(params operations.DelBoardColorParams) middleware.Responder {
+	if err := h.MySQL.DelColor(int(params.ColorID)); err != nil {
+		l.WithError(err).Error("failed to delete color")
+		return operations.NewDelBoardColorInternalServerError()
 	}
+	return operations.NewDelBoardColorOK()
+}
+
+func (h *Handler) PostColorHandler(params operations.PostBoardColorsParams) middleware.Responder {
+	if err := h.MySQL.PutColor(&storages.Color{
+		Name:    params.Body.Name,
+		PinCode: params.Body.PinCode,
+		Hex:     params.Body.Hex,
+	}); err != nil {
+		l.WithError(err).Error("failed to add color")
+		return operations.NewPostBoardColorsInternalServerError()
+	}
+	return operations.NewPostBoardColorsOK()
 }
 
 func (h *Handler) ConfigureHandlers(api *operations.OneTwoClimbAPI) {
 	api.Logger = l.Printf
-	api.BoardColorsHandler = operations.BoardColorsHandlerFunc(h.GetColorsHandler)
+	api.GetBoardColorsHandler = operations.GetBoardColorsHandlerFunc(h.GetColorsHandler)
+	api.PostBoardColorsHandler = operations.PostBoardColorsHandlerFunc(h.PostColorHandler)
+	api.DelBoardColorHandler = operations.DelBoardColorHandlerFunc(h.DeleteColorHandler)
 }

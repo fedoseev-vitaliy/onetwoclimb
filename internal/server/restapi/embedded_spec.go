@@ -34,7 +34,7 @@ func init() {
     "/colors": {
       "get": {
         "summary": "get board colors",
-        "operationId": "boardColors",
+        "operationId": "getBoardColors",
         "responses": {
           "200": {
             "description": "OK",
@@ -60,6 +60,56 @@ func init() {
             }
           }
         }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "summary": "post board colors",
+        "operationId": "postBoardColors",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/Color"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "General server error. Error codes:\n  - 4 Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/colors/{colorId}": {
+      "delete": {
+        "summary": "delete borad color",
+        "operationId": "delBoardColor",
+        "parameters": [
+          {
+            "$ref": "#/parameters/colorId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "General server error. Error codes:\n  - 4 Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
       }
     }
   },
@@ -73,8 +123,9 @@ func init() {
           "type": "string"
         },
         "id": {
-          "description": "color id",
-          "type": "integer"
+          "description": "color Id",
+          "type": "integer",
+          "format": "int32"
         },
         "name": {
           "description": "item name",
@@ -101,6 +152,16 @@ func init() {
           "type": "string"
         }
       }
+    }
+  },
+  "parameters": {
+    "colorId": {
+      "type": "integer",
+      "format": "int32",
+      "description": "color ID",
+      "name": "colorId",
+      "in": "path",
+      "required": true
     }
   }
 }`))
@@ -121,7 +182,7 @@ func init() {
     "/colors": {
       "get": {
         "summary": "get board colors",
-        "operationId": "boardColors",
+        "operationId": "getBoardColors",
         "responses": {
           "200": {
             "description": "OK",
@@ -147,6 +208,61 @@ func init() {
             }
           }
         }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "summary": "post board colors",
+        "operationId": "postBoardColors",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/Color"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "General server error. Error codes:\n  - 4 Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/colors/{colorId}": {
+      "delete": {
+        "summary": "delete borad color",
+        "operationId": "delBoardColor",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int32",
+            "description": "color ID",
+            "name": "colorId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "General server error. Error codes:\n  - 4 Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
       }
     }
   },
@@ -160,8 +276,9 @@ func init() {
           "type": "string"
         },
         "id": {
-          "description": "color id",
-          "type": "integer"
+          "description": "color Id",
+          "type": "integer",
+          "format": "int32"
         },
         "name": {
           "description": "item name",
@@ -188,6 +305,16 @@ func init() {
           "type": "string"
         }
       }
+    }
+  },
+  "parameters": {
+    "colorId": {
+      "type": "integer",
+      "format": "int32",
+      "description": "color ID",
+      "name": "colorId",
+      "in": "path",
+      "required": true
     }
   }
 }`))

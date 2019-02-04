@@ -18,40 +18,40 @@ import (
 	models "github.com/onetwoclimb/internal/server/models"
 )
 
-// BoardColorsHandlerFunc turns a function with the right signature into a board colors handler
-type BoardColorsHandlerFunc func(BoardColorsParams) middleware.Responder
+// GetBoardColorsHandlerFunc turns a function with the right signature into a get board colors handler
+type GetBoardColorsHandlerFunc func(GetBoardColorsParams) middleware.Responder
 
 // Handle executing the request and returning a response
-func (fn BoardColorsHandlerFunc) Handle(params BoardColorsParams) middleware.Responder {
+func (fn GetBoardColorsHandlerFunc) Handle(params GetBoardColorsParams) middleware.Responder {
 	return fn(params)
 }
 
-// BoardColorsHandler interface for that can handle valid board colors params
-type BoardColorsHandler interface {
-	Handle(BoardColorsParams) middleware.Responder
+// GetBoardColorsHandler interface for that can handle valid get board colors params
+type GetBoardColorsHandler interface {
+	Handle(GetBoardColorsParams) middleware.Responder
 }
 
-// NewBoardColors creates a new http.Handler for the board colors operation
-func NewBoardColors(ctx *middleware.Context, handler BoardColorsHandler) *BoardColors {
-	return &BoardColors{Context: ctx, Handler: handler}
+// NewGetBoardColors creates a new http.Handler for the get board colors operation
+func NewGetBoardColors(ctx *middleware.Context, handler GetBoardColorsHandler) *GetBoardColors {
+	return &GetBoardColors{Context: ctx, Handler: handler}
 }
 
-/*BoardColors swagger:route GET /colors boardColors
+/*GetBoardColors swagger:route GET /colors getBoardColors
 
 get board colors
 
 */
-type BoardColors struct {
+type GetBoardColors struct {
 	Context *middleware.Context
-	Handler BoardColorsHandler
+	Handler GetBoardColorsHandler
 }
 
-func (o *BoardColors) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (o *GetBoardColors) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	route, rCtx, _ := o.Context.RouteInfo(r)
 	if rCtx != nil {
 		r = rCtx
 	}
-	var Params = NewBoardColorsParams()
+	var Params = NewGetBoardColorsParams()
 
 	if err := o.Context.BindValidRequest(r, route, &Params); err != nil { // bind params
 		o.Context.Respond(rw, r, route.Produces, route, err)
@@ -64,17 +64,17 @@ func (o *BoardColors) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 }
 
-// BoardColorsOKBody board colors o k body
-// swagger:model BoardColorsOKBody
-type BoardColorsOKBody struct {
+// GetBoardColorsOKBody get board colors o k body
+// swagger:model GetBoardColorsOKBody
+type GetBoardColorsOKBody struct {
 
 	// colors
 	// Required: true
 	Colors []*models.Color `json:"colors"`
 }
 
-// Validate validates this board colors o k body
-func (o *BoardColorsOKBody) Validate(formats strfmt.Registry) error {
+// Validate validates this get board colors o k body
+func (o *GetBoardColorsOKBody) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := o.validateColors(formats); err != nil {
@@ -87,9 +87,9 @@ func (o *BoardColorsOKBody) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (o *BoardColorsOKBody) validateColors(formats strfmt.Registry) error {
+func (o *GetBoardColorsOKBody) validateColors(formats strfmt.Registry) error {
 
-	if err := validate.Required("boardColorsOK"+"."+"colors", "body", o.Colors); err != nil {
+	if err := validate.Required("getBoardColorsOK"+"."+"colors", "body", o.Colors); err != nil {
 		return err
 	}
 
@@ -101,7 +101,7 @@ func (o *BoardColorsOKBody) validateColors(formats strfmt.Registry) error {
 		if o.Colors[i] != nil {
 			if err := o.Colors[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("boardColorsOK" + "." + "colors" + "." + strconv.Itoa(i))
+					return ve.ValidateName("getBoardColorsOK" + "." + "colors" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -113,7 +113,7 @@ func (o *BoardColorsOKBody) validateColors(formats strfmt.Registry) error {
 }
 
 // MarshalBinary interface implementation
-func (o *BoardColorsOKBody) MarshalBinary() ([]byte, error) {
+func (o *GetBoardColorsOKBody) MarshalBinary() ([]byte, error) {
 	if o == nil {
 		return nil, nil
 	}
@@ -121,8 +121,8 @@ func (o *BoardColorsOKBody) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (o *BoardColorsOKBody) UnmarshalBinary(b []byte) error {
-	var res BoardColorsOKBody
+func (o *GetBoardColorsOKBody) UnmarshalBinary(b []byte) error {
+	var res GetBoardColorsOKBody
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

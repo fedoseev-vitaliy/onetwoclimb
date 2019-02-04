@@ -18,8 +18,8 @@ type Color struct {
 	// color in hex
 	Hex string `json:"hex,omitempty"`
 
-	// color id
-	ID int64 `json:"id,omitempty"`
+	// color Id
+	ID int32 `json:"id,omitempty"`
 
 	// item name
 	Name string `json:"name,omitempty"`

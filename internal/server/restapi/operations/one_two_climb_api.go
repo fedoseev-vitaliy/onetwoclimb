@@ -37,8 +37,14 @@ func NewOneTwoClimbAPI(spec *loads.Document) *OneTwoClimbAPI {
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
 		JSONProducer:        runtime.JSONProducer(),
-		BoardColorsHandler: BoardColorsHandlerFunc(func(params BoardColorsParams) middleware.Responder {
-			return middleware.NotImplemented("operation BoardColors has not yet been implemented")
+		DelBoardColorHandler: DelBoardColorHandlerFunc(func(params DelBoardColorParams) middleware.Responder {
+			return middleware.NotImplemented("operation DelBoardColor has not yet been implemented")
+		}),
+		GetBoardColorsHandler: GetBoardColorsHandlerFunc(func(params GetBoardColorsParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetBoardColors has not yet been implemented")
+		}),
+		PostBoardColorsHandler: PostBoardColorsHandlerFunc(func(params PostBoardColorsParams) middleware.Responder {
+			return middleware.NotImplemented("operation PostBoardColors has not yet been implemented")
 		}),
 	}
 }
@@ -71,8 +77,12 @@ type OneTwoClimbAPI struct {
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
 
-	// BoardColorsHandler sets the operation handler for the board colors operation
-	BoardColorsHandler BoardColorsHandler
+	// DelBoardColorHandler sets the operation handler for the del board color operation
+	DelBoardColorHandler DelBoardColorHandler
+	// GetBoardColorsHandler sets the operation handler for the get board colors operation
+	GetBoardColorsHandler GetBoardColorsHandler
+	// PostBoardColorsHandler sets the operation handler for the post board colors operation
+	PostBoardColorsHandler PostBoardColorsHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -136,8 +146,16 @@ func (o *OneTwoClimbAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
-	if o.BoardColorsHandler == nil {
-		unregistered = append(unregistered, "BoardColorsHandler")
+	if o.DelBoardColorHandler == nil {
+		unregistered = append(unregistered, "DelBoardColorHandler")
+	}
+
+	if o.GetBoardColorsHandler == nil {
+		unregistered = append(unregistered, "GetBoardColorsHandler")
+	}
+
+	if o.PostBoardColorsHandler == nil {
+		unregistered = append(unregistered, "PostBoardColorsHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -238,10 +256,20 @@ func (o *OneTwoClimbAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/colors/{colorId}"] = NewDelBoardColor(o.context, o.DelBoardColorHandler)
+
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/colors"] = NewBoardColors(o.context, o.BoardColorsHandler)
+	o.handlers["GET"]["/colors"] = NewGetBoardColors(o.context, o.GetBoardColorsHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/colors"] = NewPostBoardColors(o.context, o.PostBoardColorsHandler)
 
 }
 
