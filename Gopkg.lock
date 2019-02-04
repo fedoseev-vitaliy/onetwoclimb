@@ -195,11 +195,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:08656ef9c5a45ddccb7f206ca2d67e12e9fcda4122a83dc0544b5c967267cefa"
+  digest = "1:34130204ce3bd3d32bd111e28d9155de1e78132dbf29b2c4cedeca510e954f3e"
   name = "github.com/go-openapi/spec"
   packages = ["."]
   pruneopts = "UT"
-  revision = "5b6cdde3200976e3ecceb2868706ee39b6aff3e4"
+  revision = "53d776530bf78a11b03a7b52dd8a083086b045e5"
 
 [[projects]]
   branch = "master"
@@ -211,11 +211,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0005186c6608dd542239ac8e4f4f1e2e7c24d493e999113c46b93332f0362fc0"
+  digest = "1:0b66bf36a53b887e6e544ae8351d552803d6895969a884f60450240cc11f4910"
   name = "github.com/go-openapi/swag"
   packages = ["."]
   pruneopts = "UT"
-  revision = "1d29f06aebd59ccdf11ae04aa0334ded96e2d909"
+  revision = "b28747f5c7f9eb6b0b82d2f87f365fff72b535c9"
 
 [[projects]]
   branch = "master"
@@ -224,6 +224,14 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "d2eab7d93009e9215fc85b2faa2c2f2a98c2af48"
+
+[[projects]]
+  digest = "1:ec6f9bf5e274c833c911923c9193867f3f18788c461f76f05f62bb1510e0ae65"
+  name = "github.com/go-sql-driver/mysql"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "72cd26f257d44c1114970e19afddcd812016007e"
+  version = "v1.4.1"
 
 [[projects]]
   digest = "1:2281769a2f95d77e1b3062931eabffe76eea42219df546166d9b43dc6424d3ea"
@@ -376,7 +384,7 @@
 
 [[projects]]
   branch = "08.01.2019"
-  digest = "1:0b1c1558658b4acd402e26bfc0695ae36fda32288e3cc792661ab3da8103e7a3"
+  digest = "1:cc3a79e8819804582643d37b0664f3fa501dd0b6be958ebe77677e2f69aaba95"
   name = "github.com/golangci/go-tools"
   packages = [
     "arg",
@@ -401,7 +409,7 @@
     "version",
   ]
   pruneopts = "UT"
-  revision = "be4842e24b9581c8f5ae5fdff449e7312e012258"
+  revision = "35a9f45a5db090b0227d692d823151104cd695fa"
 
 [[projects]]
   branch = "master"
@@ -431,7 +439,7 @@
   revision = "0b8337e80d98f7eec18e4504a4557b34423fd039"
 
 [[projects]]
-  digest = "1:ef15ddeb4a366008bf24db7b705d7efc0a1bc7b0e7f659a7152b0365ff97034e"
+  digest = "1:080e96255df8b479e3920a8fe2784c4ce74ae4117d388ad85ea1b280cef86278"
   name = "github.com/golangci/golangci-lint"
   packages = [
     "cmd/golangci-lint",
@@ -454,8 +462,8 @@
     "pkg/timeutils",
   ]
   pruneopts = "UT"
-  revision = "2192097e7f56c84fa793b6f933056cd18773fae2"
-  version = "v1.13"
+  revision = "7b2421d55194c9dc385eff7720a037aa9244ca3c"
+  version = "v1.13.2"
 
 [[projects]]
   branch = "master"
@@ -651,12 +659,20 @@
   version = "v0.0.4"
 
 [[projects]]
-  digest = "1:78bbb1ba5b7c3f2ed0ea1eab57bdd3859aec7e177811563edc41198a760b06af"
+  digest = "1:0356f3312c9bd1cbeda81505b7fd437501d8e778ab66998ef69f00d7f9b3a0d7"
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3ee7d812e62a0804a7d0a324e0249ca2db3476d3"
+  version = "v0.0.4"
+
+[[projects]]
+  digest = "1:5d231480e1c64a726869bc4142d270184c419749d34f167646baa21008eb0a79"
   name = "github.com/mitchellh/go-homedir"
   packages = ["."]
   pruneopts = "UT"
-  revision = "ae18d6b8b3205b561c79e8e5f69bff09736185f4"
-  version = "v1.0.0"
+  revision = "af06845cf3004701891bf4fdb884bfe4920b3727"
+  version = "v1.1.0"
 
 [[projects]]
   digest = "1:53bc4cd4914cd7cd52139990d5170d6dc99067ae31c56530621b18b35fc30318"
@@ -685,6 +701,14 @@
   version = "v0.1"
 
 [[projects]]
+  digest = "1:abcdbf03ca6ca13d3697e2186edc1f33863bbdac2b3a44dfa39015e8903f7409"
+  name = "github.com/olekukonko/tablewriter"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e6d60cf7ba1f42d86d54cdf5508611c4aafb3970"
+  version = "v0.0.1"
+
+[[projects]]
   digest = "1:95741de3af260a92cc5c7f3f3061e85273f5a81b5db20d4bd68da74bd521675e"
   name = "github.com/pelletier/go-toml"
   packages = ["."]
@@ -709,6 +733,17 @@
   version = "v1.0.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:adddeca6a627f69b0c34971dfc13292f334352d43ba0b9b121434ff92a2d04c1"
+  name = "github.com/rubenv/sql-migrate"
+  packages = [
+    ".",
+    "sqlparse",
+  ]
+  pruneopts = "UT"
+  revision = "5a8808c14925f69d2228981db113f672ad047e69"
+
+[[projects]]
   digest = "1:87c2e02fb01c27060ccc5ba7c5a407cc91147726f8f40b70cceeedbc52b1f3a8"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
@@ -717,15 +752,15 @@
   version = "v1.3.0"
 
 [[projects]]
-  digest = "1:d707dbc1330c0ed177d4642d6ae102d5e2c847ebd0eb84562d0dc4f024531cfc"
+  digest = "1:3e39bafd6c2f4bf3c76c3bfd16a2e09e016510ad5db90dc02b88e2f565d6d595"
   name = "github.com/spf13/afero"
   packages = [
     ".",
     "mem",
   ]
   pruneopts = "UT"
-  revision = "a5d6946387efe7d64d09dcba68cdd523dc1273a3"
-  version = "v1.2.0"
+  revision = "f4711e4db9e9a1d3887343acb72b2bbfc2f686f5"
+  version = "v1.2.1"
 
 [[projects]]
   digest = "1:08d65904057412fc0270fc4812a1c90c594186819243160dc779a402d4b6d0bc"
@@ -761,11 +796,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:de37e343c64582d7026bf8ab6ac5b22a72eac54f3a57020db31524affed9f423"
+  digest = "1:5f6d620d0f0fa4f7d81ec56ac5c0c8e453354bddf77d3b0924cff9ab1396e841"
   name = "github.com/spf13/viper"
   packages = ["."]
   pruneopts = "UT"
-  revision = "6d33b5a963d922d182c91e8a1c88d81fd150cfd4"
+  revision = "d104d259b3380cb653bb793756823c3c41b37b53"
 
 [[projects]]
   digest = "1:972c2427413d41a1e06ca4897e8528e5a1622894050e2f527b38ddf0f343f759"
@@ -785,11 +820,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:38f553aff0273ad6f367cb0a0f8b6eecbaef8dc6cb8b50e57b6a81c1d5b1e332"
+  digest = "1:fde12c4da6237363bf36b81b59aa36a43d28061167ec4acb0d41fc49464e28b9"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
-  revision = "057139ce5d2bdbe6fe73c53679e24e9cf007f637"
+  revision = "b8fe1690c61389d7d2a8074a507d1d40c5d30448"
 
 [[projects]]
   branch = "master"
@@ -800,18 +835,18 @@
     "netutil",
   ]
   pruneopts = "UT"
-  revision = "ed066c81e75eba56dd9bd2139ade88125b855585"
+  revision = "d26f9f9a57f3fab6a695bec0d84433c2c50f8bbf"
 
 [[projects]]
   branch = "master"
-  digest = "1:bb644db32f5bc1e327a0f748ec871edc4dc46f19b4fbbc15bfd95b1460646537"
+  digest = "1:44b10545049ca2aa524f2985e88854f0e51fa4a1f0ff0b6b98cbfeb7ae3d2837"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "c6b37f3e92850b723493d63fd35aad34e19e048d"
+  revision = "980327fe3c65509adaad5a9ff06abdf7611b4411"
 
 [[projects]]
   digest = "1:0c56024909189aee3364b7f21a95a27459f718aa7c199a5c111c36cfffd9eaef"
@@ -839,14 +874,13 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:6278cbcc878432539f546940bd7e738b4a231829dd789f391964ad7a59a259c9"
+  digest = "1:a202c36526153f52707ee10bec1313cb4383fdb0f0751e410d85698a683e6913"
   name = "golang.org/x/tools"
   packages = [
     "go/ast/astutil",
     "go/buildutil",
     "go/callgraph",
     "go/callgraph/cha",
-    "go/callgraph/rta",
     "go/gcexportdata",
     "go/internal/cgo",
     "go/internal/gcimporter",
@@ -863,7 +897,23 @@
     "internal/semver",
   ]
   pruneopts = "UT"
-  revision = "9279ec27fd88b9e004f857564a7b4123cc584f63"
+  revision = "7414d4c1f71cec71978b1aec0539171a2e42d230"
+
+[[projects]]
+  digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
+  name = "google.golang.org/appengine"
+  packages = ["cloudsql"]
+  pruneopts = "UT"
+  revision = "e9657d882bb81064595ca3b56cbe2546bbabf7b1"
+  version = "v1.4.0"
+
+[[projects]]
+  digest = "1:1b36b0cb56126316f637ad55cfd5ed84c945fe45bd90e944666b4107a80a1da9"
+  name = "gopkg.in/gorp.v1"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6a667da9c028871f98598d85413e3fc4c6daa52e"
+  version = "v1.7.2"
 
 [[projects]]
   branch = "v2"
@@ -891,11 +941,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b1250f48c23910b6bcbaf41155cf3fbc021318c965deccf77e9155f3110330ed"
+  digest = "1:f21416982fb636ce53ddca328589537aab0e99402ca626e7ca304ac48e31e98e"
   name = "mvdan.cc/unparam"
   packages = ["check"]
   pruneopts = "UT"
-  revision = "6359a3073682432337ef5c691b87b6801745eea3"
+  revision = "1679b9996abdc6431c2147a133e5223ebb86ea60"
 
 [[projects]]
   digest = "1:6a26dcb8f66d1110d3fa7b1cd097e450631bcd4f7a59a417b0f20d2646934a4a"
@@ -929,9 +979,12 @@
     "github.com/go-openapi/strfmt",
     "github.com/go-openapi/swag",
     "github.com/go-openapi/validate",
+    "github.com/go-sql-driver/mysql",
     "github.com/go-swagger/go-swagger/cmd/swagger",
     "github.com/golangci/golangci-lint/cmd/golangci-lint",
+    "github.com/olekukonko/tablewriter",
     "github.com/pkg/errors",
+    "github.com/rubenv/sql-migrate",
     "github.com/sirupsen/logrus",
     "github.com/spf13/cobra",
     "github.com/spf13/pflag",

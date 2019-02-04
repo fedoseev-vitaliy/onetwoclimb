@@ -3,8 +3,15 @@ package cmd
 import (
 	"time"
 
+	"github.com/onetwoclimb/internal/storages"
+
 	"github.com/spf13/pflag"
 )
+
+type Config struct {
+	ServerConfig
+	DB storages.Config
+}
 
 const (
 	DebugMode   string = "debug"
@@ -12,7 +19,7 @@ const (
 	TestMode    string = "test"
 )
 
-type Config struct {
+type ServerConfig struct {
 	Host string
 	Port int
 	Mode string
@@ -21,7 +28,7 @@ type Config struct {
 	WriteTimeout time.Duration
 }
 
-func (c *Config) Flags() *pflag.FlagSet {
+func (c *ServerConfig) Flags() *pflag.FlagSet {
 	f := pflag.NewFlagSet("APIConfig", pflag.PanicOnError)
 
 	f.StringVar(&c.Host, "host", "127.0.0.0", "ip")

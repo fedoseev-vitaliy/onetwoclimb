@@ -10,7 +10,7 @@ import (
 )
 
 func TestGetColorsCount(t *testing.T) {
-	h := New()
+	h := New(nil)
 	req := operations.BoardColorsParams{
 		HTTPRequest: &http.Request{},
 	}

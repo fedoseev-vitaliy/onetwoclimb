@@ -23,7 +23,6 @@ import (
 
 	"golang.org/x/tools/go/callgraph"
 	"golang.org/x/tools/go/callgraph/cha"
-	"golang.org/x/tools/go/callgraph/rta"
 	"golang.org/x/tools/go/packages"
 	"golang.org/x/tools/go/ssa"
 	"golang.org/x/tools/go/ssa/ssautil"
@@ -31,7 +30,7 @@ import (
 
 // UnusedParams returns a list of human-readable issues that point out unused
 // function parameters.
-func UnusedParams(tests bool, algo string, exported, debug bool, args ...string) ([]string, error) {
+func UnusedParams(tests bool, exported, debug bool, args ...string) ([]string, error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil, err
@@ -39,7 +38,6 @@ func UnusedParams(tests bool, algo string, exported, debug bool, args ...string)
 	c := &Checker{
 		wd:       wd,
 		tests:    tests,
-		algo:     algo,
 		exported: exported,
 	}
 	if debug {
@@ -59,7 +57,6 @@ type Checker struct {
 	wd string
 
 	tests    bool
-	algo     string
 	exported bool
 	debugLog io.Writer
 
@@ -73,6 +70,14 @@ type Checker struct {
 	// funcBodyByPos maps from a function position to its body. We can't map
 	// to the declaration, as that could be either a FuncDecl or FuncLit.
 	funcBodyByPos map[token.Pos]*ast.BlockStmt
+
+	// typesImplementing records the method names that each named type needs
+	// to typecheck properly, as they're required to implement interfaces.
+	typesImplementing map[*types.Named][]string
+
+	// Funcs used as a struct field or a func call argument. These are very
+	// often signatures which cannot be changed.
+	funcUsedAs map[*ssa.Function]string
 }
 
 var errorType = types.Universe.Lookup("error").Type()
@@ -139,11 +144,6 @@ func (c *Checker) ProgramSSA(prog *ssa.Program) {
 	c.prog = prog
 }
 
-// CallgraphAlgorithm supplies Checker with the call graph construction algorithm.
-func (c *Checker) CallgraphAlgorithm(algo string) {
-	c.algo = algo
-}
-
 // CheckExportedFuncs sets whether to inspect exported functions
 func (c *Checker) CheckExportedFuncs(exported bool) {
 	c.exported = exported
@@ -184,6 +184,8 @@ func (c *Checker) Check() ([]Issue, error) {
 	c.cachedDeclCounts = make(map[string]map[string]int)
 	c.callByPos = make(map[token.Pos]*ast.CallExpr)
 	c.funcBodyByPos = make(map[token.Pos]*ast.BlockStmt)
+	c.typesImplementing = make(map[*types.Named][]string)
+
 	wantPkg := make(map[*types.Package]*packages.Package)
 	genFiles := make(map[string]bool)
 	for _, pkg := range c.pkgs {
@@ -195,6 +197,18 @@ func (c *Checker) Check() ([]Issue, error) {
 			}
 			ast.Inspect(f, func(node ast.Node) bool {
 				switch node := node.(type) {
+				case *ast.ValueSpec:
+					if len(node.Values) == 0 || node.Type == nil ||
+						len(node.Names) != 1 || node.Names[0].Name != "_" {
+						break
+					}
+					iface, ok := pkg.TypesInfo.TypeOf(node.Type).Underlying().(*types.Interface)
+					if !ok {
+						break
+					}
+					// var _ someIface = named
+					valTyp := pkg.TypesInfo.Types[node.Values[0]].Type
+					c.addImplementing(findNamed(valTyp), iface)
 				case *ast.CallExpr:
 					c.callByPos[node.Lparen] = node
 				// ssa.Function.Pos returns the declaring
@@ -209,26 +223,82 @@ func (c *Checker) Check() ([]Issue, error) {
 			})
 		}
 	}
-	switch c.algo {
-	case "cha":
-		c.graph = cha.CallGraph(c.prog)
-	case "rta":
-		mains, err := mainPackages(c.prog, wantPkg)
-		if err != nil {
-			return nil, err
-		}
-		var roots []*ssa.Function
-		for _, main := range mains {
-			roots = append(roots, main.Func("init"), main.Func("main"))
-		}
-		result := rta.Analyze(roots, true)
-		c.graph = result.CallGraph
-	default:
-		return nil, fmt.Errorf("unknown call graph construction algorithm: %q", c.algo)
-	}
+	c.graph = cha.CallGraph(c.prog)
 	c.graph.DeleteSyntheticNodes()
 
-	for fn := range ssautil.AllFunctions(c.prog) {
+	allFuncs := ssautil.AllFunctions(c.prog)
+
+	c.funcUsedAs = make(map[*ssa.Function]string)
+	for curFunc := range allFuncs {
+		for _, b := range curFunc.Blocks {
+			for _, instr := range b.Instrs {
+				if instr, ok := instr.(ssa.CallInstruction); ok {
+					fn := receivesExtractedArgs(instr.Common())
+					if fn != nil {
+						// fn(someFunc())
+						c.funcUsedAs[fn] = "call wrapper"
+					}
+				}
+				switch instr := instr.(type) {
+				case *ssa.Call:
+					for _, arg := range instr.Call.Args {
+						if fn := findFunction(arg); fn != nil {
+							// someFunc(fn)
+							c.funcUsedAs[fn] = "param"
+						}
+					}
+				case *ssa.Phi:
+					for _, val := range instr.Edges {
+						if fn := findFunction(val); fn != nil {
+							// nonConstVar = fn
+							c.funcUsedAs[fn] = "phi"
+						}
+					}
+				case *ssa.Return:
+					for _, val := range instr.Results {
+						if fn := findFunction(val); fn != nil {
+							// return fn
+							c.funcUsedAs[fn] = "result"
+						}
+					}
+				case *ssa.Store:
+					as := ""
+					switch instr.Addr.(type) {
+					case *ssa.FieldAddr:
+						// x.someField = fn
+						as = "field"
+					case *ssa.IndexAddr:
+						// x[someIndex] = fn
+						as = "element"
+					case *ssa.Global:
+						// someGlobal = fn
+						as = "global"
+					default:
+						continue
+					}
+					if fn := findFunction(instr.Val); fn != nil {
+						c.funcUsedAs[fn] = as
+					}
+				case *ssa.MakeInterface:
+					// someIface(named)
+					iface := instr.Type().Underlying().(*types.Interface)
+					c.addImplementing(findNamed(instr.X.Type()), iface)
+
+					if fn := findFunction(instr.X); fn != nil {
+						// emptyIface = fn
+						c.funcUsedAs[fn] = "interface"
+					}
+				case *ssa.ChangeType:
+					if fn := findFunction(instr.X); fn != nil {
+						// someType(fn)
+						c.funcUsedAs[fn] = "type conversion"
+					}
+				}
+			}
+		}
+	}
+
+	for fn := range allFuncs {
 		switch {
 		case fn.Pkg == nil: // builtin?
 			continue
@@ -267,6 +337,67 @@ func (c *Checker) Check() ([]Issue, error) {
 	return c.issues, nil
 }
 
+func stringsContains(list []string, elem string) bool {
+	for _, e := range list {
+		if e == elem {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Checker) addImplementing(named *types.Named, iface *types.Interface) {
+	if named == nil || iface == nil {
+		return
+	}
+	list := c.typesImplementing[named]
+	for i := 0; i < iface.NumMethods(); i++ {
+		name := iface.Method(i).Name()
+		if !stringsContains(list, name) {
+			list = append(list, name)
+		}
+	}
+	c.typesImplementing[named] = list
+}
+
+func findNamed(typ types.Type) *types.Named {
+	switch typ := typ.(type) {
+	case *types.Pointer:
+		return findNamed(typ.Elem())
+	case *types.Named:
+		return typ
+	}
+	return nil
+}
+
+// findFunction returns the function that is behind a value, if any.
+func findFunction(value ssa.Value) *ssa.Function {
+	switch value := value.(type) {
+	case *ssa.Function:
+		name := value.Name()
+		if strings.HasSuffix(name, "$thunk") || strings.HasSuffix(name, "$bound") {
+			// Method wrapper funcs contain a single block, which
+			// calls the function being wrapped, and returns. We
+			// want the function being wrapped.
+			for _, instr := range value.Blocks[0].Instrs {
+				call, ok := instr.(*ssa.Call)
+				if !ok {
+					continue
+				}
+				if callee := call.Call.StaticCallee(); callee != nil {
+					return callee
+				}
+			}
+			return nil // no static callee?
+		}
+		return value
+	case *ssa.MakeClosure:
+		// closure of a func
+		return findFunction(value.Fn)
+	}
+	return nil
+}
+
 // addIssue records a newly found unused parameter.
 func (c *Checker) addIssue(fn *ssa.Function, pos token.Pos, format string, args ...interface{}) {
 	c.issues = append(c.issues, Issue{
@@ -295,9 +426,16 @@ func (c *Checker) checkFunc(fn *ssa.Function, pkg *packages.Package) {
 	if node := c.graph.Nodes[fn]; node != nil {
 		inboundCalls = node.In
 	}
-	if requiredViaCall(fn, inboundCalls) {
-		c.debug("  skip - type is required via call\n")
+	if usedAs := c.funcUsedAs[fn]; usedAs != "" {
+		c.debug("  skip - func is used as a %s\n", usedAs)
 		return
+	}
+	if recv := fn.Signature.Recv(); recv != nil {
+		named := findNamed(recv.Type())
+		if stringsContains(c.typesImplementing[named], fn.Name()) {
+			c.debug("  skip - method required to implement an interface\n")
+			return
+		}
 	}
 	if c.multipleImpls(pkg, fn) {
 		c.debug("  skip - multiple implementations via build tags\n")
@@ -410,21 +548,6 @@ resLoop:
 	}
 }
 
-// mainPackages returns the subset of main packages within pkgSet.
-func mainPackages(prog *ssa.Program, pkgSet map[*types.Package]*packages.Package) ([]*ssa.Package, error) {
-	mains := make([]*ssa.Package, 0, len(pkgSet))
-	for tpkg := range pkgSet {
-		pkg := prog.Package(tpkg)
-		if tpkg.Name() == "main" && pkg.Func("main") != nil {
-			mains = append(mains, pkg)
-		}
-	}
-	if len(mains) == 0 {
-		return nil, fmt.Errorf("no main packages")
-	}
-	return mains, nil
-}
-
 // calledInReturn reports whether any of a function's inbound calls happened
 // directly as a return statement. That is, if function "foo" was used via
 // "return foo()". This means that the result parameters of the function cannot
@@ -500,6 +623,12 @@ func (c *Checker) alwaysReceivedConst(in []*callgraph.Edge, par *ssa.Parameter, 
 	seenOrig := ""
 	for _, edge := range in {
 		call := edge.Site.Common()
+		if pos >= len(call.Args) {
+			// TODO: investigate? Weird crash in
+			// internal/x/net/http2/hpack/hpack_test.go, where we
+			// roughly do: "at := d.mustAt; at(3)".
+			return ""
+		}
 		cnst := constValue(call.Args[pos])
 		if cnst == nil {
 			return "" // not a constant
@@ -731,44 +860,39 @@ func (c *Checker) multipleImpls(pkg *packages.Package, fn *ssa.Function) bool {
 	path := c.prog.Fset.Position(fn.Pos()).Filename
 	count := c.declCounts(filepath.Dir(path), pkg.Types.Name())
 	name := fn.Name()
-	if fn.Signature.Recv() != nil {
-		tp := fn.Params[0].Type()
-		for {
-			ptr, ok := tp.(*types.Pointer)
-			if !ok {
-				break
-			}
-			tp = ptr.Elem()
-		}
-		named := tp.(*types.Named)
+	if recv := fn.Signature.Recv(); recv != nil {
+		named := findNamed(recv.Type())
 		name = named.Obj().Name() + "." + name
 	}
 	return count[name] > 1
 }
 
-// receivesExtractedArgs reports whether a function call got all of its
-// arguments via another function call. That is, if a call to function "foo" was
-// of the form "foo(bar())".
-func receivesExtractedArgs(sign *types.Signature, call *ssa.Call) bool {
-	if call == nil {
-		return false
+// receivesExtractedArgs returns the statically called function, if its multiple
+// arguments were all received via another function call. That is, if a call to
+// function "foo" was of the form "foo(bar())". This often means that the
+// parameters in "foo" are difficult to remove, even if unused.
+func receivesExtractedArgs(call *ssa.CallCommon) *ssa.Function {
+	callee := findFunction(call.Value)
+	if callee == nil {
+		return nil
 	}
-	if sign.Params().Len() < 2 {
-		return false // extracting into one param is ok
+	if callee.Signature.Params().Len() < 2 {
+		return nil // extracting into one param is ok
 	}
-	args := call.Operands(nil)
-	for i, arg := range args {
-		if i == 0 {
-			continue // *ssa.Function, func itself
+	for i, arg := range call.Args {
+		if i == 0 && callee.Signature.Recv() != nil {
+			// receiver argument
+			continue
 		}
-		if i == 1 && sign.Recv() != nil {
-			continue // method receiver
+		ext, ok := arg.(*ssa.Extract)
+		if !ok {
+			return nil
 		}
-		if _, ok := (*arg).(*ssa.Extract); !ok {
-			return false
+		if _, ok := ext.Tuple.(*ssa.Call); !ok {
+			return nil
 		}
 	}
-	return true
+	return callee
 }
 
 // paramDesc returns a string describing a parameter variable. If the parameter
@@ -780,43 +904,4 @@ func paramDesc(i int, v *types.Var) string {
 		return name
 	}
 	return fmt.Sprintf("%d (%s)", i, v.Type().String())
-}
-
-// requiredViaCall reports whether a function has any inbound call that strongly
-// depends on the function's signature. For example, if the function is accessed
-// via a field, or if it gets its arguments from another function call. In these
-// cases, changing the function signature would mean a larger refactor.
-func requiredViaCall(fn *ssa.Function, calls []*callgraph.Edge) bool {
-	for _, edge := range calls {
-		call := edge.Site.Value()
-		if receivesExtractedArgs(fn.Signature, call) {
-			// called via fn(x())
-			return true
-		}
-		switch edge.Site.Common().Value.(type) {
-		case *ssa.Parameter:
-			// Func used as parameter; not safe.
-			return true
-		case *ssa.Call:
-			// Called through an interface; not safe.
-			return true
-		case *ssa.TypeAssert:
-			// Called through a type assertion; not safe.
-			return true
-		case *ssa.Const:
-			// Conservative "may implement" edge; not safe.
-			return true
-		case *ssa.UnOp:
-			// TODO: why is this not safe?
-			return true
-		case *ssa.Phi:
-			// We may run this function or another; not safe.
-			return true
-		case *ssa.Function:
-			// Called directly; the call site can easily be adapted.
-		default:
-			// Other instructions are safe or non-interesting.
-		}
-	}
-	return false
 }

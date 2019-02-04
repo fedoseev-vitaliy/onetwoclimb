@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/onetwoclimb/internal/storages"
 	"github.com/sirupsen/logrus"
 
 	"github.com/onetwoclimb/internal/server/models"
@@ -11,10 +12,11 @@ import (
 var l = logrus.New()
 
 type Handler struct {
+	MySQL *storages.MySQLStorage
 }
 
-func New() *Handler {
-	return &Handler{}
+func New(storage *storages.MySQLStorage) *Handler {
+	return &Handler{MySQL: storage}
 }
 
 func (h *Handler) GetColorsHandler(parameters operations.BoardColorsParams) middleware.Responder {
