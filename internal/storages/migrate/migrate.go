@@ -153,26 +153,12 @@ func GetMigrations() []*migrate.Migration {
 		{
 			Id: "1",
 			Up: []string{`
-				CREATE TABLE IF NOT EXISTS attempts (
-					id int(11) NOT NULL AUTO_INCREMENT,
-					user_id int(11) NOT NULL,
-					timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-					gym_id int(11) DEFAULT NULL,
-					event_id int(11) DEFAULT NULL,
-					route_id int(11) NOT NULL,
-					isFlash int(1) NOT NULL,
-					attemptCount int(11) NOT NULL,
-					redpointCount int(11) NOT NULL,
-					isBonus tinyint(1) NOT NULL,
-					isTop tinyint(1) NOT NULL,
-					PRIMARY KEY id,
-					UNIQUE KEY id (id),
-					UNIQUE KEY route_user_event_unique_index (user_id, route_id, event_id),
-					KEY user_id (user_id),
-					KEY gym_id (gym_id),
-					KEY event_id (event_id),
-					KEY route_id (route_id)
-				)
+				CREATE TABLE colors (
+  					id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  					name VARCHAR(255) NOT NULL DEFAULT '',
+  					pin_code VARCHAR(255) NOT NULL DEFAULT '',
+  					hex VARCHAR(255) NOT NULL DEFAULT ''
+				);
 			`},
 			Down: []string{`
 				DROP TABLE IF EXISTS colors CASCADE;
