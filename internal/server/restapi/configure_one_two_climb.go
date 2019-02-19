@@ -13,7 +13,7 @@ import (
 	"github.com/onetwoclimb/internal/server/restapi/operations"
 )
 
-//go:generate swagger generate server --target ../internal/server --name  --spec ../api/spec.yaml --exclude-main
+//go:generate swagger generate server --target ../internal/server --name OneTwoClimb --spec ../api/spec.yaml --exclude-main
 
 func configureFlags(api *operations.OneTwoClimbAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }

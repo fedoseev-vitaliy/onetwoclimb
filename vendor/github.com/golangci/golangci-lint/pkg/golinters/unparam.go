@@ -22,8 +22,11 @@ func (Unparam) Desc() string {
 func (lint Unparam) Run(ctx context.Context, lintCtx *linter.Context) ([]result.Issue, error) {
 	us := &lintCtx.Settings().Unparam
 
+	if us.Algo != "cha" {
+		lintCtx.Log.Warnf("`linters-settings.unparam.algo` isn't supported by the newest `unparam`")
+	}
+
 	c := &check.Checker{}
-	c.CallgraphAlgorithm(us.Algo)
 	c.CheckExportedFuncs(us.CheckExported)
 	c.Packages(lintCtx.Packages)
 	c.ProgramSSA(lintCtx.SSAProgram)
@@ -37,7 +40,7 @@ func (lint Unparam) Run(ctx context.Context, lintCtx *linter.Context) ([]result.
 	for _, i := range unparamIssues {
 		res = append(res, result.Issue{
 			Pos:        lintCtx.Program.Fset.Position(i.Pos()),
-			Text:       markIdentifiers(i.Message()),
+			Text:       i.Message(),
 			FromLinter: lint.Name(),
 		})
 	}

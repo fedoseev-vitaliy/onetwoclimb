@@ -84,7 +84,7 @@ swagger-clean:
 
 swagger: swagger-clean swagger-build-binary
 	@echo $(GREEN_COLOR)[swagger]$(DEFAULT_COLOR)
-	@$(SWAGGER) generate server \
+	./bin/$(SWAGGER) generate server \
 	   -f ./api/spec.yaml \
 	   --exclude-main \
 	   --flag-strategy=pflag \
@@ -100,7 +100,7 @@ endif
 
 swaggerdoc: swagger
 	@echo $(GREEN_COLOR)[doc]$(DEFAULT_COLOR)
-	@$(SWAGGER) serve --flavor=swagger $(BASEPATH)/api/spec.yaml
+	./bin/$(SWAGGER) serve --flavor=swagger $(BASEPATH)/api/spec.yaml
 
 # start mySQL db in docker compose
 mysql-up:

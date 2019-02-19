@@ -44,7 +44,8 @@ func init() {
 
 var (
 	enabledListeners []string
-	cleanupTimout    time.Duration
+	cleanupTimeout   time.Duration
+	gracefulTimeout  time.Duration
 	maxHeaderSize    flagext.ByteSize
 
 	socketPath string
@@ -71,7 +72,8 @@ func init() {
 	maxHeaderSize = flagext.ByteSize(1000000)
 
 	flag.StringSliceVar(&enabledListeners, "scheme", defaultSchemes, "the listeners to enable, this can be repeated and defaults to the schemes in the swagger spec")
-	flag.DurationVar(&cleanupTimout, "cleanup-timeout", 10*time.Second, "grace period for which to wait before shutting down the server")
+	flag.DurationVar(&cleanupTimeout, "cleanup-timeout", 10*time.Second, "grace period for which to wait before killing idle connections")
+	flag.DurationVar(&gracefulTimeout, "graceful-timeout", 15*time.Second, "grace period for which to wait before shutting down the server")
 	flag.Var(&maxHeaderSize, "max-header-size", "controls the maximum number of bytes the server will read parsing the request header's keys and values, including the request line. It does not limit the size of the request body")
 
 	flag.StringVar(&socketPath, "socket-path", "/var/run/todo-list.sock", "the unix socket to listen on")
@@ -85,9 +87,9 @@ func init() {
 
 	flag.StringVar(&tlsHost, "tls-host", "localhost", "the IP to listen on")
 	flag.IntVar(&tlsPort, "tls-port", 0, "the port to listen on for secure connections, defaults to a random value")
-	flag.StringVar(&tlsCertificate, "tls-certificate", "", "the certificate to use for secure connections")
-	flag.StringVar(&tlsCertificateKey, "tls-key", "", "the private key to use for secure conections")
-	flag.StringVar(&tlsCACertificate, "tls-ca", "", "the certificate authority file to be used with mutual tls auth")
+	flag.StringVar(&tlsCertificate, "tls-certificate", "", "the certificate file to use for secure connections")
+	flag.StringVar(&tlsCertificateKey, "tls-key", "", "the private key file to use for secure connections (without passphrase)")
+	flag.StringVar(&tlsCACertificate, "tls-ca", "", "the certificate authority certificate file to be used with mutual tls auth")
 	flag.IntVar(&tlsListenLimit, "tls-listen-limit", 0, "limit the number of outstanding requests")
 	flag.DurationVar(&tlsKeepAlive, "tls-keep-alive", 3*time.Minute, "sets the TCP keep-alive timeouts on accepted connections. It prunes dead TCP connections ( e.g. closing laptop mid-download)")
 	flag.DurationVar(&tlsReadTimeout, "tls-read-timeout", 30*time.Second, "maximum duration before timing out read of the request")
@@ -128,7 +130,8 @@ func NewServer(api *operations.OneTwoClimbAPI) *Server {
 	s := new(Server)
 
 	s.EnabledListeners = enabledListeners
-	s.CleanupTimeout = cleanupTimout
+	s.CleanupTimeout = cleanupTimeout
+	s.GracefulTimeout = gracefulTimeout
 	s.MaxHeaderSize = maxHeaderSize
 	s.SocketPath = socketPath
 	s.Host = stringEnvOverride(host, "", "HOST")
@@ -170,6 +173,7 @@ func (s *Server) ConfigureFlags() {
 type Server struct {
 	EnabledListeners []string
 	CleanupTimeout   time.Duration
+	GracefulTimeout  time.Duration
 	MaxHeaderSize    flagext.ByteSize
 
 	SocketPath    string
@@ -201,7 +205,6 @@ type Server struct {
 	shuttingDown int32
 	interrupted  bool
 	interrupt    chan os.Signal
-	chanLock     sync.RWMutex
 }
 
 // Logf logs message either via defined user logger or via system one if no user logger is defined.
@@ -268,11 +271,14 @@ func (s *Server) Serve() (err error) {
 		s.SetHandler(s.api.Serve(nil))
 	}
 
-	var wg sync.WaitGroup
-	quitting := make(chan struct{})
+	wg := new(sync.WaitGroup)
 	once := new(sync.Once)
 	signalNotify(s.interrupt)
-	go handleInterrupt(once, s, quitting)
+	go handleInterrupt(once, s)
+
+	servers := []*http.Server{}
+	wg.Add(1)
+	go s.handleShutdown(wg, &servers)
 
 	if s.hasScheme(schemeUnix) {
 		domainSocket := new(http.Server)
@@ -284,16 +290,16 @@ func (s *Server) Serve() (err error) {
 
 		configureServer(domainSocket, "unix", string(s.SocketPath))
 
-		wg.Add(2)
+		wg.Add(1)
 		s.Logf("Serving one two climb at unix://%s", s.SocketPath)
 		go func(l net.Listener) {
 			defer wg.Done()
-			if err := domainSocket.Serve(l); err != nil {
+			if err := domainSocket.Serve(l); err != nil && err != http.ErrServerClosed {
 				s.Fatalf("%v", err)
 			}
 			s.Logf("Stopped serving one two climb at unix://%s", s.SocketPath)
 		}(s.domainSocketL)
-		go s.handleShutdown(&wg, domainSocket)
+		servers = append(servers, domainSocket)
 	}
 
 	if s.hasScheme(schemeHTTP) {
@@ -314,16 +320,16 @@ func (s *Server) Serve() (err error) {
 
 		configureServer(httpServer, "http", s.httpServerL.Addr().String())
 
-		wg.Add(2)
+		wg.Add(1)
 		s.Logf("Serving one two climb at http://%s", s.httpServerL.Addr())
 		go func(l net.Listener) {
 			defer wg.Done()
-			if err := httpServer.Serve(l); err != nil {
+			if err := httpServer.Serve(l); err != nil && err != http.ErrServerClosed {
 				s.Fatalf("%v", err)
 			}
 			s.Logf("Stopped serving one two climb at http://%s", l.Addr())
 		}(s.httpServerL)
-		go s.handleShutdown(&wg, httpServer)
+		servers = append(servers, httpServer)
 	}
 
 	if s.hasScheme(schemeHTTPS) {
@@ -358,33 +364,40 @@ func (s *Server) Serve() (err error) {
 				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
 				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
 				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+				tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
+				tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
 			},
 		}
 
+		// build standard config from server options
 		if s.TLSCertificate != "" && s.TLSCertificateKey != "" {
 			httpsServer.TLSConfig.Certificates = make([]tls.Certificate, 1)
 			httpsServer.TLSConfig.Certificates[0], err = tls.LoadX509KeyPair(s.TLSCertificate, s.TLSCertificateKey)
+			if err != nil {
+				return err
+			}
 		}
 
 		if s.TLSCACertificate != "" {
+			// include specified CA certificate
 			caCert, caCertErr := ioutil.ReadFile(s.TLSCACertificate)
 			if caCertErr != nil {
-				log.Fatal(caCertErr)
+				return caCertErr
 			}
 			caCertPool := x509.NewCertPool()
-			caCertPool.AppendCertsFromPEM(caCert)
+			ok := caCertPool.AppendCertsFromPEM(caCert)
+			if !ok {
+				return fmt.Errorf("cannot parse CA certificate")
+			}
 			httpsServer.TLSConfig.ClientCAs = caCertPool
 			httpsServer.TLSConfig.ClientAuth = tls.RequireAndVerifyClientCert
 		}
 
+		// call custom TLS configurator
 		configureTLS(httpsServer.TLSConfig)
-		httpsServer.TLSConfig.BuildNameToCertificate()
-
-		if err != nil {
-			return err
-		}
 
 		if len(httpsServer.TLSConfig.Certificates) == 0 {
+			// after standard and custom config are passed, this ends up with no certificate
 			if s.TLSCertificate == "" {
 				if s.TLSCertificateKey == "" {
 					s.Fatalf("the required flags `--tls-certificate` and `--tls-key` were not specified")
@@ -394,20 +407,25 @@ func (s *Server) Serve() (err error) {
 			if s.TLSCertificateKey == "" {
 				s.Fatalf("the required flag `--tls-key` was not specified")
 			}
+			// this happens with a wrong custom TLS configurator
+			s.Fatalf("no certificate was configured for TLS")
 		}
+
+		// must have at least one certificate or panics
+		httpsServer.TLSConfig.BuildNameToCertificate()
 
 		configureServer(httpsServer, "https", s.httpsServerL.Addr().String())
 
-		wg.Add(2)
+		wg.Add(1)
 		s.Logf("Serving one two climb at https://%s", s.httpsServerL.Addr())
 		go func(l net.Listener) {
 			defer wg.Done()
-			if err := httpsServer.Serve(l); err != nil {
+			if err := httpsServer.Serve(l); err != nil && err != http.ErrServerClosed {
 				s.Fatalf("%v", err)
 			}
 			s.Logf("Stopped serving one two climb at https://%s", l.Addr())
 		}(tls.NewListener(s.httpsServerL, httpsServer.TLSConfig))
-		go s.handleShutdown(&wg, httpsServer)
+		servers = append(servers, httpsServer)
 	}
 
 	wg.Wait()
@@ -487,48 +505,49 @@ func (s *Server) Listen() error {
 
 // Shutdown server and clean up resources
 func (s *Server) Shutdown() error {
-	if atomic.LoadInt32(&s.shuttingDown) != 0 {
-		s.Logf("already shutting down")
-		return nil
+	if atomic.CompareAndSwapInt32(&s.shuttingDown, 0, 1) {
+		close(s.shutdown)
 	}
-	close(s.shutdown)
 	return nil
 }
 
-func (s *Server) handleShutdown(wg *sync.WaitGroup, server *http.Server) {
+func (s *Server) handleShutdown(wg *sync.WaitGroup, serversPtr *[]*http.Server) {
+	// wg.Done must occur last, after s.api.ServerShutdown()
+	// (to preserve old behaviour)
 	defer wg.Done()
-	ctx, cancel := context.WithTimeout(context.TODO(), 15*time.Second)
-	defer cancel()
 
 	<-s.shutdown
-	if err := server.Shutdown(ctx); err != nil {
-		// Error from closing listeners, or context timeout:
-		s.Logf("HTTP server Shutdown: %v", err)
-	} else {
-		atomic.AddInt32(&s.shuttingDown, 1)
-		select {
-		case <-ctx.Done():
-			if err := ctx.Err(); err != nil {
-				s.Logf("Error %s", err)
-			}
-		default:
-			done := make(chan error)
-			defer close(done)
-			go func() {
-				<-ctx.Done()
-				done <- ctx.Err()
+
+	servers := *serversPtr
+
+	ctx, cancel := context.WithTimeout(context.TODO(), s.GracefulTimeout)
+	defer cancel()
+
+	shutdownChan := make(chan bool)
+	for i := range servers {
+		server := servers[i]
+		go func() {
+			var success bool
+			defer func() {
+				shutdownChan <- success
 			}()
-			go func() {
-				//done <- s.api.Shutdown(ctx)
-				s.api.ServerShutdown()
-				done <- errors.New("API shut down")
-			}()
-			if err := <-done; err != nil {
-				s.Logf("Error %s", err)
+			if err := server.Shutdown(ctx); err != nil {
+				// Error from closing listeners, or context timeout:
+				s.Logf("HTTP server Shutdown: %v", err)
+			} else {
+				success = true
 			}
-		}
+		}()
 	}
-	return
+
+	// Wait until all listeners have successfully shut down before calling ServerShutdown
+	success := true
+	for range servers {
+		success = success && <-shutdownChan
+	}
+	if success {
+		s.api.ServerShutdown()
+	}
 }
 
 // GetHandler returns a handler useful for testing
@@ -571,7 +590,7 @@ func (s *Server) TLSListener() (net.Listener, error) {
 	return s.httpsServerL, nil
 }
 
-func handleInterrupt(once *sync.Once, s *Server, quitting chan struct{}) {
+func handleInterrupt(once *sync.Once, s *Server) {
 	once.Do(func() {
 		for _ = range s.interrupt {
 			if s.interrupted {
@@ -580,16 +599,8 @@ func handleInterrupt(once *sync.Once, s *Server, quitting chan struct{}) {
 			}
 			s.interrupted = true
 			s.Logf("Shutting down... ")
-			close(quitting)
-
-			if err := s.httpServerL.Close(); err != nil {
-				s.Logf("Error: %s", err)
-			}
-			if err := s.httpsServerL.Close(); err != nil {
-				s.Logf("Error: %s", err)
-			}
-			if err := s.domainSocketL.Close(); err != nil {
-				s.Logf("Error: %s", err)
+			if err := s.Shutdown(); err != nil {
+				s.Logf("HTTP server Shutdown: %v", err)
 			}
 		}
 	})

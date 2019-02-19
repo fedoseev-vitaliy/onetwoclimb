@@ -1,6 +1,9 @@
 package config
 
 import (
+	"errors"
+	"fmt"
+	"regexp"
 	"time"
 )
 
@@ -10,6 +13,7 @@ const (
 	OutFormatColoredLineNumber = "colored-line-number"
 	OutFormatTab               = "tab"
 	OutFormatCheckstyle        = "checkstyle"
+	OutFormatCodeClimate       = "code-climate"
 )
 
 var OutFormats = []string{
@@ -18,6 +22,7 @@ var OutFormats = []string{
 	OutFormatJSON,
 	OutFormatTab,
 	OutFormatCheckstyle,
+	OutFormatCodeClimate,
 }
 
 type ExcludePattern struct {
@@ -153,7 +158,8 @@ type LintersSettings struct {
 		IncludeGoRoot bool `mapstructure:"include-go-root"`
 	}
 	Misspell struct {
-		Locale string
+		Locale      string
+		IgnoreWords []string `mapstructure:"ignore-words"`
 	}
 	Unused struct {
 		CheckExported bool `mapstructure:"check-exported"`
@@ -225,9 +231,47 @@ type Linters struct {
 	Presets []string
 }
 
+type ExcludeRule struct {
+	Linters []string
+	Path    string
+	Text    string
+}
+
+func validateOptionalRegex(value string) error {
+	if value == "" {
+		return nil
+	}
+	_, err := regexp.Compile(value)
+	return err
+}
+
+func (e ExcludeRule) Validate() error {
+	if err := validateOptionalRegex(e.Path); err != nil {
+		return fmt.Errorf("invalid path regex: %v", err)
+	}
+	if err := validateOptionalRegex(e.Text); err != nil {
+		return fmt.Errorf("invalid text regex: %v", err)
+	}
+	nonBlank := 0
+	if len(e.Linters) > 0 {
+		nonBlank++
+	}
+	if e.Path != "" {
+		nonBlank++
+	}
+	if e.Text != "" {
+		nonBlank++
+	}
+	if nonBlank < 2 {
+		return errors.New("at least 2 of (text, path, linters) should be set")
+	}
+	return nil
+}
+
 type Issues struct {
-	ExcludePatterns    []string `mapstructure:"exclude"`
-	UseDefaultExcludes bool     `mapstructure:"exclude-use-default"`
+	ExcludePatterns    []string      `mapstructure:"exclude"`
+	ExcludeRules       []ExcludeRule `mapstructure:"exclude-rules"`
+	UseDefaultExcludes bool          `mapstructure:"exclude-use-default"`
 
 	MaxIssuesPerLinter int `mapstructure:"max-issues-per-linter"`
 	MaxSameIssues      int `mapstructure:"max-same-issues"`
@@ -235,6 +279,8 @@ type Issues struct {
 	DiffFromRevision  string `mapstructure:"new-from-rev"`
 	DiffPatchFilePath string `mapstructure:"new-from-patch"`
 	Diff              bool   `mapstructure:"new"`
+
+	NeedFix bool `mapstructure:"fix"`
 }
 
 type Config struct { //nolint:maligned
