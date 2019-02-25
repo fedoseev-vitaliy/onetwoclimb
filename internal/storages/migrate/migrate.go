@@ -9,7 +9,7 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/onetwoclimb/internal/storages"
-	"github.com/rubenv/sql-migrate"
+	migrate "github.com/rubenv/sql-migrate"
 	"github.com/spf13/cobra"
 )
 
@@ -153,17 +153,23 @@ func GetMigrations() []*migrate.Migration {
 		{
 			Id: "1",
 			Up: []string{`
-				CREATE TABLE colors (
-  					id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  					name VARCHAR(255) NOT NULL DEFAULT '',
-  					pin_code VARCHAR(255) NOT NULL DEFAULT '',
-  					hex VARCHAR(255) NOT NULL DEFAULT ''
-				);
-			`},
+				CREATE TABLE attempt_log (
+  					id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  					isFlash tinyint(1) DEFAULT NULL,
+  					isRedpoint tinyint(1) DEFAULT NULL,
+  					isAttempt tinyint(1) DEFAULT NULL,
+  					attemptId int(11) NOT NULL,
+					userId int(11) NOT NULL,
+  					points int(11) NOT NULL,
+  					datetime timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  					date date NOT NULL,
+  					KEY attemptId (attemptId),
+  					KEY userId (userId)
+				) ENGINE=InnoDB AUTO_INCREMENT=16149 DEFAULT CHARSET=utf8;
+			`}, // todo need to create, format SQL script
 			Down: []string{`
-				DROP TABLE IF EXISTS colors CASCADE;
+				DROP TABLE IF EXISTS attempt_log;
 			`},
 		},
 	}
-
 }
