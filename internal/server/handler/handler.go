@@ -1,8 +1,14 @@
 package handler
 
 import (
+	"image"
+	"image/draw"
+	"image/png"
+	"os"
+
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/onetwoclimb/internal/storages"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
 	"github.com/onetwoclimb/internal/server/models"
@@ -61,9 +67,38 @@ func (h *Handler) PostColorHandler(params operations.PostBoardColorsParams) midd
 	return operations.NewPostBoardColorsOK()
 }
 
+func (h *Handler) PostUpload(params operations.UploadFileParams) middleware.Responder {
+	img, err := png.Decode(params.File)
+	if err != nil {
+		l.WithError(errors.WithStack(err)).Error("failed to decode png file")
+		return operations.NewUploadFileInternalServerError()
+	}
+
+	f, err := os.Create("img.png") // todo make unique name and dest path to config
+	if err != nil {
+		l.WithError(errors.WithStack(err)).Error("failed to create png file")
+		return operations.NewUploadFileInternalServerError()
+	}
+	defer f.Close()
+
+	// Prepare parent image where we want to position child image.
+	target := image.NewRGBA(img.Bounds())
+	// Draw child image.
+	draw.Draw(target, img.Bounds(), img, image.Point{0, 0}, draw.Src)
+
+	err = png.Encode(f, target)
+	if err != nil {
+		l.WithError(errors.WithStack(err)).Error("failed to save file")
+		return operations.NewUploadFileInternalServerError()
+	}
+
+	return operations.NewUploadFileOK()
+}
+
 func (h *Handler) ConfigureHandlers(api *operations.OneTwoClimbAPI) {
 	api.Logger = l.Printf
 	api.GetBoardColorsHandler = operations.GetBoardColorsHandlerFunc(h.GetColorsHandler)
 	api.PostBoardColorsHandler = operations.PostBoardColorsHandlerFunc(h.PostColorHandler)
 	api.DelBoardColorHandler = operations.DelBoardColorHandlerFunc(h.DeleteColorHandler)
+	api.UploadFileHandler = operations.UploadFileHandlerFunc(h.PostUpload)
 }

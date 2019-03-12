@@ -31,6 +31,8 @@ func configureAPI(api *operations.OneTwoClimbAPI) http.Handler {
 
 	api.JSONConsumer = runtime.JSONConsumer()
 
+	api.MultipartformConsumer = runtime.DiscardConsumer
+
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.DelBoardColorHandler = operations.DelBoardColorHandlerFunc(func(params operations.DelBoardColorParams) middleware.Responder {
@@ -41,6 +43,9 @@ func configureAPI(api *operations.OneTwoClimbAPI) http.Handler {
 	})
 	api.PostBoardColorsHandler = operations.PostBoardColorsHandlerFunc(func(params operations.PostBoardColorsParams) middleware.Responder {
 		return middleware.NotImplemented("operation .PostBoardColors has not yet been implemented")
+	})
+	api.UploadFileHandler = operations.UploadFileHandlerFunc(func(params operations.UploadFileParams) middleware.Responder {
+		return middleware.NotImplemented("operation .UploadFile has not yet been implemented")
 	})
 
 	api.ServerShutdown = func() {}

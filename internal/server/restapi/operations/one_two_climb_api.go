@@ -23,20 +23,21 @@ import (
 // NewOneTwoClimbAPI creates a new OneTwoClimb instance
 func NewOneTwoClimbAPI(spec *loads.Document) *OneTwoClimbAPI {
 	return &OneTwoClimbAPI{
-		handlers:            make(map[string]map[string]http.Handler),
-		formats:             strfmt.Default,
-		defaultConsumes:     "application/json",
-		defaultProduces:     "application/json",
-		customConsumers:     make(map[string]runtime.Consumer),
-		customProducers:     make(map[string]runtime.Producer),
-		ServerShutdown:      func() {},
-		spec:                spec,
-		ServeError:          errors.ServeError,
-		BasicAuthenticator:  security.BasicAuth,
-		APIKeyAuthenticator: security.APIKeyAuth,
-		BearerAuthenticator: security.BearerAuth,
-		JSONConsumer:        runtime.JSONConsumer(),
-		JSONProducer:        runtime.JSONProducer(),
+		handlers:              make(map[string]map[string]http.Handler),
+		formats:               strfmt.Default,
+		defaultConsumes:       "application/json",
+		defaultProduces:       "application/json",
+		customConsumers:       make(map[string]runtime.Consumer),
+		customProducers:       make(map[string]runtime.Producer),
+		ServerShutdown:        func() {},
+		spec:                  spec,
+		ServeError:            errors.ServeError,
+		BasicAuthenticator:    security.BasicAuth,
+		APIKeyAuthenticator:   security.APIKeyAuth,
+		BearerAuthenticator:   security.BearerAuth,
+		JSONConsumer:          runtime.JSONConsumer(),
+		MultipartformConsumer: runtime.DiscardConsumer,
+		JSONProducer:          runtime.JSONProducer(),
 		DelBoardColorHandler: DelBoardColorHandlerFunc(func(params DelBoardColorParams) middleware.Responder {
 			return middleware.NotImplemented("operation DelBoardColor has not yet been implemented")
 		}),
@@ -45,6 +46,9 @@ func NewOneTwoClimbAPI(spec *loads.Document) *OneTwoClimbAPI {
 		}),
 		PostBoardColorsHandler: PostBoardColorsHandlerFunc(func(params PostBoardColorsParams) middleware.Responder {
 			return middleware.NotImplemented("operation PostBoardColors has not yet been implemented")
+		}),
+		UploadFileHandler: UploadFileHandlerFunc(func(params UploadFileParams) middleware.Responder {
+			return middleware.NotImplemented("operation UploadFile has not yet been implemented")
 		}),
 	}
 }
@@ -73,6 +77,8 @@ type OneTwoClimbAPI struct {
 
 	// JSONConsumer registers a consumer for a "application/json" mime type
 	JSONConsumer runtime.Consumer
+	// MultipartformConsumer registers a consumer for a "multipart/form-data" mime type
+	MultipartformConsumer runtime.Consumer
 
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
@@ -83,6 +89,8 @@ type OneTwoClimbAPI struct {
 	GetBoardColorsHandler GetBoardColorsHandler
 	// PostBoardColorsHandler sets the operation handler for the post board colors operation
 	PostBoardColorsHandler PostBoardColorsHandler
+	// UploadFileHandler sets the operation handler for the upload file operation
+	UploadFileHandler UploadFileHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -142,6 +150,10 @@ func (o *OneTwoClimbAPI) Validate() error {
 		unregistered = append(unregistered, "JSONConsumer")
 	}
 
+	if o.MultipartformConsumer == nil {
+		unregistered = append(unregistered, "MultipartformConsumer")
+	}
+
 	if o.JSONProducer == nil {
 		unregistered = append(unregistered, "JSONProducer")
 	}
@@ -156,6 +168,10 @@ func (o *OneTwoClimbAPI) Validate() error {
 
 	if o.PostBoardColorsHandler == nil {
 		unregistered = append(unregistered, "PostBoardColorsHandler")
+	}
+
+	if o.UploadFileHandler == nil {
+		unregistered = append(unregistered, "UploadFileHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -193,6 +209,9 @@ func (o *OneTwoClimbAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Co
 
 		case "application/json":
 			result["application/json"] = o.JSONConsumer
+
+		case "multipart/form-data":
+			result["multipart/form-data"] = o.MultipartformConsumer
 
 		}
 
@@ -270,6 +289,11 @@ func (o *OneTwoClimbAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/colors"] = NewPostBoardColors(o.context, o.PostBoardColorsHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/upload"] = NewUploadFile(o.context, o.UploadFileHandler)
 
 }
 

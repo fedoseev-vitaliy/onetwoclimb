@@ -111,6 +111,35 @@ func init() {
           }
         }
       }
+    },
+    "/upload": {
+      "post": {
+        "description": "The file can't be larger than **5MB**",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "summary": "Upload image",
+        "operationId": "uploadFile",
+        "parameters": [
+          {
+            "type": "file",
+            "description": "The file to upload",
+            "name": "file",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "General server error. Error codes:\n  - 4 Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -250,6 +279,35 @@ func init() {
             "name": "colorId",
             "in": "path",
             "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "General server error. Error codes:\n  - 4 Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/upload": {
+      "post": {
+        "description": "The file can't be larger than **5MB**",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "summary": "Upload image",
+        "operationId": "uploadFile",
+        "parameters": [
+          {
+            "type": "file",
+            "description": "The file to upload",
+            "name": "file",
+            "in": "formData"
           }
         ],
         "responses": {

@@ -70,7 +70,28 @@ paths:
               - 4 Server error
           schema:
             $ref: "#/definitions/Error"
-
+  /upload:
+    post:
+      operationId: uploadFile
+      summary: Upload image
+      description: "The file can't be larger than **5MB**"
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: file
+          in: formData
+          description: The file to upload
+          type: file
+      responses:
+        200:
+          description: OK
+        500:
+          description: >-
+            General server error.
+            Error codes:
+              - 4 Server error
+          schema:
+            $ref: "#/definitions/Error"
 parameters:
   colorId:
     name: colorId

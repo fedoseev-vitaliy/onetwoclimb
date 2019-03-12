@@ -31,7 +31,7 @@ type ServerConfig struct {
 func (c *ServerConfig) Flags() *pflag.FlagSet {
 	f := pflag.NewFlagSet("APIConfig", pflag.PanicOnError)
 
-	f.StringVar(&c.Host, "host", "127.0.0.0", "ip")
+	f.StringVar(&c.Host, "host", "127.0.0.1", "ip")
 	f.IntVar(&c.Port, "port", 8081, "port")
 	f.StringVar(&c.Mode, "mode", ReleaseMode, "release,debug,test")
 	f.AddFlagSet(config.DB.Flags("mysql"))
