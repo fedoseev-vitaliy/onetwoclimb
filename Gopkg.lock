@@ -178,7 +178,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:eb66dfa6d0b3fbb2e1473de99a7fb1cc90c0b27da7e444105865b119c38d6ca5"
+  digest = "1:74aec1372988b156c2c72fe2437249ecabf733df4c04cdabda8e294c2125f87d"
   name = "github.com/go-openapi/runtime"
   packages = [
     ".",
@@ -191,7 +191,7 @@
     "security",
   ]
   pruneopts = "UT"
-  revision = "41e24cc66d7af6af39eb9b5a6418e901bcdd333c"
+  revision = "25a2b415dd47dbf71343b9da8e2be9c4a7d6f300"
 
 [[projects]]
   branch = "master"
@@ -203,19 +203,19 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ad97c212fb4e79ac396ccf4d2e66f8eb233691992574d0fe76d046e67302b949"
+  digest = "1:870c2ad4adc14d047d3dc9fdbed4910a0a48b118998d988290ce11340ab9e92e"
   name = "github.com/go-openapi/strfmt"
   packages = ["."]
   pruneopts = "UT"
-  revision = "bb512950308460a5584a64228c227807cea1e4bd"
+  revision = "4d736b26696e845676d9bae899e6e97892c11f80"
 
 [[projects]]
   branch = "master"
-  digest = "1:0b66bf36a53b887e6e544ae8351d552803d6895969a884f60450240cc11f4910"
+  digest = "1:937e7dbdd1a44b6a295897142108b23001e76a2829968004ecba638ef9b3a88a"
   name = "github.com/go-openapi/swag"
   packages = ["."]
   pruneopts = "UT"
-  revision = "b28747f5c7f9eb6b0b82d2f87f365fff72b535c9"
+  revision = "b3e2804c8535ee0d1b89320afd98474d5b8e9e3b"
 
 [[projects]]
   branch = "master"
@@ -383,7 +383,7 @@
   revision = "927a3d87b613e9f6f0fb7ef8bb8de8b83c30a5a2"
 
 [[projects]]
-  branch = "08.01.2019"
+  branch = "master"
   digest = "1:cc3a79e8819804582643d37b0664f3fa501dd0b6be958ebe77677e2f69aaba95"
   name = "github.com/golangci/go-tools"
   packages = [
@@ -599,12 +599,12 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:0a69a1c0db3591fcefb47f115b224592c8dfa4368b7ba9fae509d5e16cdc95c8"
+  digest = "1:31e761d97c76151dde79e9d28964a812c46efc5baee4085b86f68f0c654450de"
   name = "github.com/konsorten/go-windows-terminal-sequences"
   packages = ["."]
   pruneopts = "UT"
-  revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
-  version = "v1.0.1"
+  revision = "f55edac94c9bbba5d6182a4be46d86a2c9b5b50e"
+  version = "v1.0.2"
 
 [[projects]]
   branch = "master"
@@ -632,7 +632,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:84a5a2b67486d5d67060ac393aa255d05d24ed5ee41daecd5635ec22657b6492"
+  digest = "1:df495c9184b4e6cbb9d55652236dbcbe72c65a1c8b6469da50722628cea474e7"
   name = "github.com/mailru/easyjson"
   packages = [
     "buffer",
@@ -640,7 +640,7 @@
     "jwriter",
   ]
   pruneopts = "UT"
-  revision = "60711f1a8329503b04e1c88535f419d0bb440bff"
+  revision = "1de009706dbeb9d05f18586f0735fcdb7c524481"
 
 [[projects]]
   digest = "1:c658e84ad3916da105a761660dcaeb01e63416c8ec7bc62256a9b411a05fcd67"
@@ -651,12 +651,12 @@
   version = "v0.0.9"
 
 [[projects]]
-  digest = "1:0981502f9816113c9c8c4ac301583841855c8cf4da8c72f696b3ebedf6d0e4e5"
+  digest = "1:e150b5fafbd7607e2d638e4e5cf43aa4100124e5593385147b0a74e2733d8b0d"
   name = "github.com/mattn/go-isatty"
   packages = ["."]
   pruneopts = "UT"
-  revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
-  version = "v0.0.4"
+  revision = "c2a7a6ca930a4cd0bc33a3f298eb71960732a3a7"
+  version = "v0.0.7"
 
 [[projects]]
   digest = "1:0356f3312c9bd1cbeda81505b7fd437501d8e778ab66998ef69f00d7f9b3a0d7"
@@ -744,12 +744,12 @@
   revision = "1007f53448d75fe14190968f5de4d95ed63ebb83"
 
 [[projects]]
-  digest = "1:87c2e02fb01c27060ccc5ba7c5a407cc91147726f8f40b70cceeedbc52b1f3a8"
+  digest = "1:e4c72127d910a96daf869a44f3dd563b86dbe6931a172863a0e99c5ff04b59e4"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   pruneopts = "UT"
-  revision = "e1e72e9de974bd926e5c56f83753fba2df402ce5"
-  version = "v1.3.0"
+  revision = "dae0fa8d5b0c810a8ab733fbd5510c7cae84eca4"
+  version = "v1.4.0"
 
 [[projects]]
   digest = "1:3e39bafd6c2f4bf3c76c3bfd16a2e09e016510ad5db90dc02b88e2f565d6d595"
@@ -779,12 +779,12 @@
   version = "v0.0.3"
 
 [[projects]]
-  digest = "1:68ea4e23713989dc20b1bded5d9da2c5f9be14ff9885beef481848edd18c26cb"
+  digest = "1:1b753ec16506f5864d26a28b43703c58831255059644351bbcb019b843950900"
   name = "github.com/spf13/jwalterweatherman"
   packages = ["."]
   pruneopts = "UT"
-  revision = "4a4406e478ca629068e7768fc33f3f044173c0a6"
-  version = "v1.0.0"
+  revision = "94f6ae3ed3bceceafa716478c5fbf8d29ca601a1"
+  version = "v1.1.0"
 
 [[projects]]
   digest = "1:c1b1102241e7f645bc8e0c22ae352e8f0dc6484b6cb4d132fa9f24174e0119e2"
@@ -820,33 +820,34 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:fde12c4da6237363bf36b81b59aa36a43d28061167ec4acb0d41fc49464e28b9"
+  digest = "1:058e9504b9a79bfe86092974d05bb3298d2aa0c312d266d43148de289a5065d9"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
-  revision = "74369b46fc6756741c016591724fd1cb8e26845f"
+  revision = "c2843e01d9a2bc60bb26ad24e09734fdc2d9ec58"
 
 [[projects]]
   branch = "master"
-  digest = "1:bbd232f46e33dfb01068e0f4193a3da2d662a350873804bc964f697de5f39ac7"
+  digest = "1:500fd233d46dec5d64eaf3acbb0e585262c356947ec499f9d79aaa119ef62088"
   name = "golang.org/x/net"
   packages = [
+    "context",
     "idna",
     "netutil",
   ]
   pruneopts = "UT"
-  revision = "3a22650c66bd7f4fb6d1e8072ffd7b75c8a27898"
+  revision = "d8887717615a059821345a5c23649351b52a1c0b"
 
 [[projects]]
   branch = "master"
-  digest = "1:0d703f14f9bbbe1070ff0ce86d749dcbc9d68fb0ae554252c09bd4bb37a072e7"
+  digest = "1:944736317d4f2fb1c1015ef9ca05fd9313b4e19f1128901cc678f636435fa9b0"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "153ac476189d567564fda94622d7a8c0fb338f6b"
+  revision = "fead79001313d15903fb4605b4a1b781532cd93e"
 
 [[projects]]
   digest = "1:0c56024909189aee3364b7f21a95a27459f718aa7c199a5c111c36cfffd9eaef"
@@ -874,7 +875,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:69e26d0b9cdcca6490998e05d197e81488d660ffa89288c86a9e3604252c58cb"
+  digest = "1:55abebab1f333c9cd1fd9b50db283f88a1bf1b1e450451eb440e263b820aa83c"
   name = "golang.org/x/tools"
   packages = [
     "go/ast/astutil",
@@ -895,7 +896,7 @@
     "internal/semver",
   ]
   pruneopts = "UT"
-  revision = "f000d56b39dc0a2ce627c268f181ee36527f2378"
+  revision = "e65039ee4138194d75ebaa2da35887260d5e15b2"
 
 [[projects]]
   digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
@@ -943,7 +944,7 @@
   name = "mvdan.cc/unparam"
   packages = ["check"]
   pruneopts = "UT"
-  revision = "da01123e7b4fe5282512ac72e8c6cde37779bcb7"
+  revision = "1b9ccfa71afe53433971717161c9666adfc4d8c5"
 
 [[projects]]
   digest = "1:6a26dcb8f66d1110d3fa7b1cd097e450631bcd4f7a59a417b0f20d2646934a4a"
