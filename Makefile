@@ -54,7 +54,6 @@ clean:
 	@echo $(GREEN_COLOR)[clean]$(DEFAULT_COLOR)
 	@$(GOCLEAN)
 	@if [ -f $(BINARY) ] ; then rm $(BINARY) ; fi
-	@rm -rf ./bin
 
 lint:
 	@echo $(GREEN_COLOR)[lint]$(DEFAULT_COLOR)
@@ -84,7 +83,7 @@ swagger-clean:
 
 swagger: swagger-clean swagger-build-binary
 	@echo $(GREEN_COLOR)[swagger]$(DEFAULT_COLOR)
-	./bin/$(SWAGGER) generate server \
+	@./bin/$(SWAGGER) generate server \
 	   -f ./api/spec.yaml \
 	   --exclude-main \
 	   --flag-strategy=pflag \
