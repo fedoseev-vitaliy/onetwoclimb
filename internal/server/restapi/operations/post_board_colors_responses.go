@@ -40,8 +40,7 @@ func (o *PostBoardColorsOK) WriteResponse(rw http.ResponseWriter, producer runti
 // PostBoardColorsInternalServerErrorCode is the HTTP code returned for type PostBoardColorsInternalServerError
 const PostBoardColorsInternalServerErrorCode int = 500
 
-/*PostBoardColorsInternalServerError General server error. Error codes:
-  - 4 Server error
+/*PostBoardColorsInternalServerError General server error
 
 swagger:response postBoardColorsInternalServerError
 */

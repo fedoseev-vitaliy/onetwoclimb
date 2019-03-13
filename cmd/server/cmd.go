@@ -1,39 +1,44 @@
-package cmd
+package server
 
 import (
 	"flag"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+
+	"github.com/onetwoclimb/cmd/config"
 	"github.com/onetwoclimb/internal/server/handler"
 	serverMW "github.com/onetwoclimb/internal/server/middleware"
 	"github.com/onetwoclimb/internal/server/restapi"
 	"github.com/onetwoclimb/internal/server/restapi/operations"
 	"github.com/onetwoclimb/internal/storages"
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 )
 
-var config Config
+var cfg config.Config
 
 var l = logrus.New()
 
 func init() {
-	RootCmd.AddCommand(cmd)
-	cmd.Flags().AddFlagSet(config.Flags())
+	Cmd.Flags().AddFlagSet(cfg.Flags())
 }
 
-var cmd = &cobra.Command{
+var Cmd = &cobra.Command{
 	Use:   "server",
 	Short: "run server",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		flag.Parse()
 
+		if err := cfg.Validate(); err != nil {
+			return errors.Wrap(err, "storage folder doesn't exists")
+		}
+
 		l.Info("start 12Climb server")
 		defer l.Info("stop 12Climb server")
 
-		mysql, err := storages.New(&config.DB)
+		mysql, err := storages.New(&cfg.DB)
 		if err != nil {
 			return errors.Wrap(err, "failed to init mySQL db")
 		}
@@ -58,12 +63,12 @@ var cmd = &cobra.Command{
 		}()
 
 		// set the port this service will be run on
-		server.Port = config.Port
-		server.Host = config.Host
-		server.ReadTimeout = config.ReadTimeout
-		server.WriteTimeout = config.WriteTimeout
+		server.Port = cfg.Port
+		server.Host = cfg.Host
+		server.ReadTimeout = cfg.ReadTimeout
+		server.WriteTimeout = cfg.WriteTimeout
 
-		handler.New(storage).ConfigureHandlers(api)
+		handler.New(storage, cfg).ConfigureHandlers(api)
 
 		server.SetHandler(serverMW.PanicRecovery(serverMW.Logger(api.Serve(middleware.PassthroughBuilder))))
 

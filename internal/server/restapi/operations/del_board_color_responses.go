@@ -40,8 +40,7 @@ func (o *DelBoardColorOK) WriteResponse(rw http.ResponseWriter, producer runtime
 // DelBoardColorInternalServerErrorCode is the HTTP code returned for type DelBoardColorInternalServerError
 const DelBoardColorInternalServerErrorCode int = 500
 
-/*DelBoardColorInternalServerError General server error. Error codes:
-  - 4 Server error
+/*DelBoardColorInternalServerError General server error
 
 swagger:response delBoardColorInternalServerError
 */

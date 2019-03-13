@@ -38,8 +38,12 @@ func NewOneTwoClimbAPI(spec *loads.Document) *OneTwoClimbAPI {
 		JSONConsumer:          runtime.JSONConsumer(),
 		MultipartformConsumer: runtime.DiscardConsumer,
 		JSONProducer:          runtime.JSONProducer(),
+		BinProducer:           runtime.ByteStreamProducer(),
 		DelBoardColorHandler: DelBoardColorHandlerFunc(func(params DelBoardColorParams) middleware.Responder {
 			return middleware.NotImplemented("operation DelBoardColor has not yet been implemented")
+		}),
+		DownloadFileHandler: DownloadFileHandlerFunc(func(params DownloadFileParams) middleware.Responder {
+			return middleware.NotImplemented("operation DownloadFile has not yet been implemented")
 		}),
 		GetBoardColorsHandler: GetBoardColorsHandlerFunc(func(params GetBoardColorsParams) middleware.Responder {
 			return middleware.NotImplemented("operation GetBoardColors has not yet been implemented")
@@ -82,9 +86,13 @@ type OneTwoClimbAPI struct {
 
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
+	// BinProducer registers a producer for a "application/octet-stream" mime type
+	BinProducer runtime.Producer
 
 	// DelBoardColorHandler sets the operation handler for the del board color operation
 	DelBoardColorHandler DelBoardColorHandler
+	// DownloadFileHandler sets the operation handler for the download file operation
+	DownloadFileHandler DownloadFileHandler
 	// GetBoardColorsHandler sets the operation handler for the get board colors operation
 	GetBoardColorsHandler GetBoardColorsHandler
 	// PostBoardColorsHandler sets the operation handler for the post board colors operation
@@ -158,8 +166,16 @@ func (o *OneTwoClimbAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
+	if o.BinProducer == nil {
+		unregistered = append(unregistered, "BinProducer")
+	}
+
 	if o.DelBoardColorHandler == nil {
 		unregistered = append(unregistered, "DelBoardColorHandler")
+	}
+
+	if o.DownloadFileHandler == nil {
+		unregistered = append(unregistered, "DownloadFileHandler")
 	}
 
 	if o.GetBoardColorsHandler == nil {
@@ -233,6 +249,9 @@ func (o *OneTwoClimbAPI) ProducersFor(mediaTypes []string) map[string]runtime.Pr
 		case "application/json":
 			result["application/json"] = o.JSONProducer
 
+		case "application/octet-stream":
+			result["application/octet-stream"] = o.BinProducer
+
 		}
 
 		if p, ok := o.customProducers[mt]; ok {
@@ -279,6 +298,11 @@ func (o *OneTwoClimbAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/colors/{colorId}"] = NewDelBoardColor(o.context, o.DelBoardColorHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/download/{id}"] = NewDownloadFile(o.context, o.DownloadFileHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)

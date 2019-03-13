@@ -26,10 +26,7 @@ paths:
             required:
               - colors
         500:
-          description: >-
-            General server error.
-            Error codes:
-              - 4 Server error
+          description: General server error
           schema:
             $ref: "#/definitions/Error"
     post:
@@ -47,10 +44,7 @@ paths:
         200:
           description: OK
         500:
-          description: >-
-            General server error.
-            Error codes:
-              - 4 Server error
+          description: General server error
           schema:
             $ref: "#/definitions/Error"
 
@@ -64,10 +58,7 @@ paths:
         200:
           description: OK
         500:
-          description: >-
-            General server error.
-            Error codes:
-              - 4 Server error
+          description: General server error
           schema:
             $ref: "#/definitions/Error"
   /upload:
@@ -85,13 +76,38 @@ paths:
       responses:
         200:
           description: OK
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: image id
+            required:
+              - id
         500:
-          description: >-
-            General server error.
-            Error codes:
-              - 4 Server error
+          description: General server error
           schema:
             $ref: "#/definitions/Error"
+  /download/{id}:
+    get:
+      operationId: downloadFile
+      summary: Download image
+      produces:
+        - application/octet-stream
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: download file
+          schema:
+            type: file
+        500:
+          description: General server error
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: File not found
+
 parameters:
   colorId:
     name: colorId
@@ -99,6 +115,12 @@ parameters:
     type: integer
     format: int32
     description: color ID
+    required: true
+  id:
+    name: id
+    in: path
+    type: string
+    description: image id
     required: true
 
 definitions:

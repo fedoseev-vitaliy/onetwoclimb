@@ -60,8 +60,7 @@ func (o *GetBoardColorsOK) WriteResponse(rw http.ResponseWriter, producer runtim
 // GetBoardColorsInternalServerErrorCode is the HTTP code returned for type GetBoardColorsInternalServerError
 const GetBoardColorsInternalServerErrorCode int = 500
 
-/*GetBoardColorsInternalServerError General server error. Error codes:
-  - 4 Server error
+/*GetBoardColorsInternalServerError General server error
 
 swagger:response getBoardColorsInternalServerError
 */

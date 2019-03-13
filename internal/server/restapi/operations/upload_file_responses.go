@@ -21,6 +21,11 @@ const UploadFileOKCode int = 200
 swagger:response uploadFileOK
 */
 type UploadFileOK struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *UploadFileOKBody `json:"body,omitempty"`
 }
 
 // NewUploadFileOK creates UploadFileOK with default headers values
@@ -29,19 +34,33 @@ func NewUploadFileOK() *UploadFileOK {
 	return &UploadFileOK{}
 }
 
+// WithPayload adds the payload to the upload file o k response
+func (o *UploadFileOK) WithPayload(payload *UploadFileOKBody) *UploadFileOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the upload file o k response
+func (o *UploadFileOK) SetPayload(payload *UploadFileOKBody) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *UploadFileOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(200)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
 
 // UploadFileInternalServerErrorCode is the HTTP code returned for type UploadFileInternalServerError
 const UploadFileInternalServerErrorCode int = 500
 
-/*UploadFileInternalServerError General server error. Error codes:
-  - 4 Server error
+/*UploadFileInternalServerError General server error
 
 swagger:response uploadFileInternalServerError
 */

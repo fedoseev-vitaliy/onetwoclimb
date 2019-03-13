@@ -54,7 +54,7 @@ func init() {
             }
           },
           "500": {
-            "description": "General server error. Error codes:\n  - 4 Server error",
+            "description": "General server error",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -82,7 +82,7 @@ func init() {
             "description": "OK"
           },
           "500": {
-            "description": "General server error. Error codes:\n  - 4 Server error",
+            "description": "General server error",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -104,7 +104,38 @@ func init() {
             "description": "OK"
           },
           "500": {
-            "description": "General server error. Error codes:\n  - 4 Server error",
+            "description": "General server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/download/{id}": {
+      "get": {
+        "produces": [
+          "application/octet-stream"
+        ],
+        "summary": "Download image",
+        "operationId": "downloadFile",
+        "parameters": [
+          {
+            "$ref": "#/parameters/id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "download file",
+            "schema": {
+              "type": "file"
+            }
+          },
+          "404": {
+            "description": "File not found"
+          },
+          "500": {
+            "description": "General server error",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -130,10 +161,22 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "description": "image id",
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "General server error. Error codes:\n  - 4 Server error",
+            "description": "General server error",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -191,6 +234,13 @@ func init() {
       "name": "colorId",
       "in": "path",
       "required": true
+    },
+    "id": {
+      "type": "string",
+      "description": "image id",
+      "name": "id",
+      "in": "path",
+      "required": true
     }
   }
 }`))
@@ -231,7 +281,7 @@ func init() {
             }
           },
           "500": {
-            "description": "General server error. Error codes:\n  - 4 Server error",
+            "description": "General server error",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -259,7 +309,7 @@ func init() {
             "description": "OK"
           },
           "500": {
-            "description": "General server error. Error codes:\n  - 4 Server error",
+            "description": "General server error",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -286,7 +336,42 @@ func init() {
             "description": "OK"
           },
           "500": {
-            "description": "General server error. Error codes:\n  - 4 Server error",
+            "description": "General server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/download/{id}": {
+      "get": {
+        "produces": [
+          "application/octet-stream"
+        ],
+        "summary": "Download image",
+        "operationId": "downloadFile",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "image id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "download file",
+            "schema": {
+              "type": "file"
+            }
+          },
+          "404": {
+            "description": "File not found"
+          },
+          "500": {
+            "description": "General server error",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -312,10 +397,22 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "description": "image id",
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "General server error. Error codes:\n  - 4 Server error",
+            "description": "General server error",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -371,6 +468,13 @@ func init() {
       "format": "int32",
       "description": "color ID",
       "name": "colorId",
+      "in": "path",
+      "required": true
+    },
+    "id": {
+      "type": "string",
+      "description": "image id",
+      "name": "id",
       "in": "path",
       "required": true
     }

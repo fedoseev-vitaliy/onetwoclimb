@@ -3,6 +3,9 @@ package cmd
 import (
 	"github.com/apex/log"
 	"github.com/spf13/cobra"
+
+	"github.com/onetwoclimb/cmd/migration"
+	"github.com/onetwoclimb/cmd/server"
 )
 
 var RootCmd = &cobra.Command{
@@ -15,4 +18,9 @@ func Execute() {
 		log.WithError(err).Fatal("something goes wrong")
 		return
 	}
+}
+
+func init() {
+	RootCmd.AddCommand(server.Cmd)
+	RootCmd.AddCommand(migration.Migration)
 }
