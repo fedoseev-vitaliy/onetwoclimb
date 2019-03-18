@@ -112,7 +112,7 @@ func init() {
         }
       }
     },
-    "/download/{id}": {
+    "/download": {
       "get": {
         "produces": [
           "application/octet-stream"
@@ -245,7 +245,7 @@ func init() {
       "type": "string",
       "description": "image id",
       "name": "id",
-      "in": "path",
+      "in": "query",
       "required": true
     }
   }
@@ -350,7 +350,7 @@ func init() {
         }
       }
     },
-    "/download/{id}": {
+    "/download": {
       "get": {
         "produces": [
           "application/octet-stream"
@@ -362,7 +362,7 @@ func init() {
             "type": "string",
             "description": "image id",
             "name": "id",
-            "in": "path",
+            "in": "query",
             "required": true
           }
         ],
@@ -487,7 +487,7 @@ func init() {
       "type": "string",
       "description": "image id",
       "name": "id",
-      "in": "path",
+      "in": "query",
       "required": true
     }
   }

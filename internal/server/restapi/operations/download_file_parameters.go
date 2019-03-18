@@ -9,7 +9,9 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/validate"
 
 	strfmt "github.com/go-openapi/strfmt"
 )
@@ -32,7 +34,7 @@ type DownloadFileParams struct {
 
 	/*image id
 	  Required: true
-	  In: path
+	  In: query
 	*/
 	ID string
 }
@@ -46,8 +48,10 @@ func (o *DownloadFileParams) BindRequest(r *http.Request, route *middleware.Matc
 
 	o.HTTPRequest = r
 
-	rID, rhkID, _ := route.Params.GetOK("id")
-	if err := o.bindID(rID, rhkID, route.Formats); err != nil {
+	qs := runtime.Values(r.URL.Query())
+
+	qID, qhkID, _ := qs.GetOK("id")
+	if err := o.bindID(qID, qhkID, route.Formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -57,15 +61,21 @@ func (o *DownloadFileParams) BindRequest(r *http.Request, route *middleware.Matc
 	return nil
 }
 
-// bindID binds and validates parameter ID from path.
+// bindID binds and validates parameter ID from query.
 func (o *DownloadFileParams) bindID(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	if !hasKey {
+		return errors.Required("id", "query")
+	}
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]
 	}
 
 	// Required: true
-	// Parameter is provided by construction from the route
+	// AllowEmptyValue: false
+	if err := validate.RequiredString("id", "query", raw); err != nil {
+		return err
+	}
 
 	o.ID = raw
 

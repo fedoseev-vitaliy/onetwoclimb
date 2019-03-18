@@ -9,7 +9,6 @@ import (
 	"errors"
 	"net/url"
 	golangswaggerpaths "path"
-	"strings"
 )
 
 // DownloadFileURL generates an URL for the download file operation
@@ -40,20 +39,22 @@ func (o *DownloadFileURL) SetBasePath(bp string) {
 func (o *DownloadFileURL) Build() (*url.URL, error) {
 	var result url.URL
 
-	var _path = "/download/{id}"
-
-	id := o.ID
-	if id != "" {
-		_path = strings.Replace(_path, "{id}", id, -1)
-	} else {
-		return nil, errors.New("ID is required on DownloadFileURL")
-	}
+	var _path = "/download"
 
 	_basePath := o._basePath
 	if _basePath == "" {
 		_basePath = "/api/v1.0"
 	}
 	result.Path = golangswaggerpaths.Join(_basePath, _path)
+
+	qs := make(url.Values)
+
+	id := o.ID
+	if id != "" {
+		qs.Set("id", id)
+	}
+
+	result.RawQuery = qs.Encode()
 
 	return &result, nil
 }

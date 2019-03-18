@@ -88,7 +88,7 @@ paths:
           description: General server error
           schema:
             $ref: "#/definitions/Error"
-  /download/{id}:
+  /download:
     get:
       operationId: downloadFile
       summary: Download image
@@ -122,7 +122,7 @@ parameters:
     required: true
   id:
     name: id
-    in: path
+    in: query
     type: string
     description: image id
     required: true

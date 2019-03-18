@@ -132,7 +132,7 @@ func generateFileName(fileType FileType) (string, error) {
 func getFileType(fileName string) (string, error) {
 	t, err := strconv.Atoi(string(fileName[len(fileName)-1]))
 	if err != nil {
-		return "", errors.WithStack(err)
+		return "", nil
 	}
 
 	switch FileType(t) {
@@ -141,8 +141,20 @@ func getFileType(fileName string) (string, error) {
 	case FILES_JPEG:
 		return FILE_EXTENSION_PNG, nil
 	default:
-		return FILE_EXTENSION_JPEG, errors.New(fmt.Sprintf("unsupported file type :%d", t))
+		return "", errors.New(fmt.Sprintf("unsupported file type :%d", t))
 	}
+}
+
+func getFileName(id string) (string, error) {
+	ft, err := getFileType(id)
+	if err != nil {
+		return "", errors.WithStack(err)
+	}
+	if ft == "" {
+		return id, nil
+	}
+
+	return fmt.Sprintf("%s.%s", id, ft), nil
 }
 
 // todo implement download
@@ -151,13 +163,12 @@ func (h *Handler) GetDownloadFile(params operations.DownloadFileParams) middlewa
 		return operations.NewDownloadFileBadRequest()
 	}
 
-	fileExt, err := getFileType(params.ID)
+	fileName, err := getFileName(params.ID)
 	if err != nil {
-		l.WithError(errors.WithStack(err)).Error("failed to get file extension")
+		l.WithError(errors.WithStack(err)).Error("failed to get file name")
 		return operations.NewDownloadFileBadRequest()
 	}
 
-	fileName := fmt.Sprintf("%s.%s", params.ID, fileExt)
 	filePath := filepath.Join(h.config.FilesDst, fileName)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 

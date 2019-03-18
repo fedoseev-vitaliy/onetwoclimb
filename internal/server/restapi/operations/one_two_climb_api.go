@@ -302,7 +302,7 @@ func (o *OneTwoClimbAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/download/{id}"] = NewDownloadFile(o.context, o.DownloadFileHandler)
+	o.handlers["GET"]["/download"] = NewDownloadFile(o.context, o.DownloadFileHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
