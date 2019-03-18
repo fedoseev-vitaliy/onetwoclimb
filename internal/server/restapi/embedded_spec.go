@@ -128,7 +128,8 @@ func init() {
           "200": {
             "description": "download file",
             "schema": {
-              "type": "file"
+              "type": "string",
+              "format": "binary"
             }
           },
           "400": {
@@ -370,7 +371,8 @@ func init() {
           "200": {
             "description": "download file",
             "schema": {
-              "type": "file"
+              "type": "string",
+              "format": "binary"
             }
           },
           "400": {
