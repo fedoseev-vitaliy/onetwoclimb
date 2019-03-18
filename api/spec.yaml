@@ -101,6 +101,10 @@ paths:
           description: download file
           schema:
             type: file
+        400:
+          description: Bad Argument
+          schema:
+            $ref: "#/definitions/Error"
         500:
           description: General server error
           schema:

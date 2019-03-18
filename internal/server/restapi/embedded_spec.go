@@ -131,6 +131,12 @@ func init() {
               "type": "file"
             }
           },
+          "400": {
+            "description": "Bad Argument",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "404": {
             "description": "File not found"
           },
@@ -365,6 +371,12 @@ func init() {
             "description": "download file",
             "schema": {
               "type": "file"
+            }
+          },
+          "400": {
+            "description": "Bad Argument",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
           },
           "404": {

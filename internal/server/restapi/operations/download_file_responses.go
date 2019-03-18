@@ -57,6 +57,50 @@ func (o *DownloadFileOK) WriteResponse(rw http.ResponseWriter, producer runtime.
 
 }
 
+// DownloadFileBadRequestCode is the HTTP code returned for type DownloadFileBadRequest
+const DownloadFileBadRequestCode int = 400
+
+/*DownloadFileBadRequest Bad Argument
+
+swagger:response downloadFileBadRequest
+*/
+type DownloadFileBadRequest struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewDownloadFileBadRequest creates DownloadFileBadRequest with default headers values
+func NewDownloadFileBadRequest() *DownloadFileBadRequest {
+
+	return &DownloadFileBadRequest{}
+}
+
+// WithPayload adds the payload to the download file bad request response
+func (o *DownloadFileBadRequest) WithPayload(payload *models.Error) *DownloadFileBadRequest {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the download file bad request response
+func (o *DownloadFileBadRequest) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *DownloadFileBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(400)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
 // DownloadFileNotFoundCode is the HTTP code returned for type DownloadFileNotFound
 const DownloadFileNotFoundCode int = 404
 
