@@ -744,6 +744,14 @@
   revision = "1007f53448d75fe14190968f5de4d95ed63ebb83"
 
 [[projects]]
+  digest = "1:274f67cb6fed9588ea2521ecdac05a6d62a8c51c074c1fccc6a49a40ba80e925"
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
+
+[[projects]]
   digest = "1:e4c72127d910a96daf869a44f3dd563b86dbe6931a172863a0e99c5ff04b59e4"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
@@ -796,11 +804,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:5f6d620d0f0fa4f7d81ec56ac5c0c8e453354bddf77d3b0924cff9ab1396e841"
+  digest = "1:1b773526998f3dbde3a51a4a5881680c4d237d3600f570d900f97ac93c7ba0a8"
   name = "github.com/spf13/viper"
   packages = ["."]
   pruneopts = "UT"
-  revision = "d104d259b3380cb653bb793756823c3c41b37b53"
+  revision = "9e56dacc08fbbf8c9ee2dbc717553c758ce42bc9"
 
 [[projects]]
   digest = "1:972c2427413d41a1e06ca4897e8528e5a1622894050e2f527b38ddf0f343f759"
@@ -824,7 +832,7 @@
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
-  revision = "c2843e01d9a2bc60bb26ad24e09734fdc2d9ec58"
+  revision = "a1f597ede03a7bef967a422b5b3a5bd08805a01e"
 
 [[projects]]
   branch = "master"
@@ -836,18 +844,18 @@
     "netutil",
   ]
   pruneopts = "UT"
-  revision = "d8887717615a059821345a5c23649351b52a1c0b"
+  revision = "d196dffd7c2beec1957382065df08bcc353b9706"
 
 [[projects]]
   branch = "master"
-  digest = "1:944736317d4f2fb1c1015ef9ca05fd9313b4e19f1128901cc678f636435fa9b0"
+  digest = "1:1aa109187d52894bd8929a34a0a483ea4e57d7e32e86d81c64cea84c1978d68e"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "fead79001313d15903fb4605b4a1b781532cd93e"
+  revision = "6c81ef8f67ca3f42fc9cd71dfbd5f35b0c4b5771"
 
 [[projects]]
   digest = "1:0c56024909189aee3364b7f21a95a27459f718aa7c199a5c111c36cfffd9eaef"
@@ -875,7 +883,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:55abebab1f333c9cd1fd9b50db283f88a1bf1b1e450451eb440e263b820aa83c"
+  digest = "1:0622179538bb2b1f3514ba1bd2222f2d6519c5ef64bc9e67de7654877e394d48"
   name = "golang.org/x/tools"
   packages = [
     "go/ast/astutil",
@@ -896,7 +904,7 @@
     "internal/semver",
   ]
   pruneopts = "UT"
-  revision = "e65039ee4138194d75ebaa2da35887260d5e15b2"
+  revision = "bb1270c20edf080f9f069ea11a1fe5c2b0ebd62c"
 
 [[projects]]
   digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
@@ -984,6 +992,7 @@
     "github.com/olekukonko/tablewriter",
     "github.com/pkg/errors",
     "github.com/rubenv/sql-migrate",
+    "github.com/satori/go.uuid",
     "github.com/sirupsen/logrus",
     "github.com/spf13/cobra",
     "github.com/spf13/pflag",

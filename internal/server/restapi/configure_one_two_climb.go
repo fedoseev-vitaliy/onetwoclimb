@@ -4,6 +4,7 @@ package restapi
 
 import (
 	"crypto/tls"
+	"io"
 	"net/http"
 
 	errors "github.com/go-openapi/errors"
@@ -34,6 +35,10 @@ func configureAPI(api *operations.OneTwoClimbAPI) http.Handler {
 	api.MultipartformConsumer = runtime.DiscardConsumer
 
 	api.JSONProducer = runtime.JSONProducer()
+
+	api.ImagePngImageJpegProducer = runtime.ProducerFunc(func(w io.Writer, data interface{}) error {
+		return errors.NotImplemented("imagePngImageJpeg producer has not yet been implemented")
+	})
 
 	api.DelBoardColorHandler = operations.DelBoardColorHandlerFunc(func(params operations.DelBoardColorParams) middleware.Responder {
 		return middleware.NotImplemented("operation .DelBoardColor has not yet been implemented")

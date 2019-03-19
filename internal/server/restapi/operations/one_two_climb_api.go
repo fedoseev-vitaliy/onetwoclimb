@@ -7,6 +7,7 @@ package operations
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
@@ -38,6 +39,9 @@ func NewOneTwoClimbAPI(spec *loads.Document) *OneTwoClimbAPI {
 		JSONConsumer:          runtime.JSONConsumer(),
 		MultipartformConsumer: runtime.DiscardConsumer,
 		JSONProducer:          runtime.JSONProducer(),
+		ImagePngImageJpegProducer: runtime.ProducerFunc(func(w io.Writer, data interface{}) error {
+			return errors.NotImplemented("imagePngImageJpeg producer has not yet been implemented")
+		}),
 		DelBoardColorHandler: DelBoardColorHandlerFunc(func(params DelBoardColorParams) middleware.Responder {
 			return middleware.NotImplemented("operation DelBoardColor has not yet been implemented")
 		}),
@@ -85,6 +89,8 @@ type OneTwoClimbAPI struct {
 
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
+	// ImagePngImageJpegProducer registers a producer for a "image/png,image/jpeg" mime type
+	ImagePngImageJpegProducer runtime.Producer
 
 	// DelBoardColorHandler sets the operation handler for the del board color operation
 	DelBoardColorHandler DelBoardColorHandler
@@ -161,6 +167,10 @@ func (o *OneTwoClimbAPI) Validate() error {
 
 	if o.JSONProducer == nil {
 		unregistered = append(unregistered, "JSONProducer")
+	}
+
+	if o.ImagePngImageJpegProducer == nil {
+		unregistered = append(unregistered, "ImagePngImageJpegProducer")
 	}
 
 	if o.DelBoardColorHandler == nil {
@@ -241,6 +251,9 @@ func (o *OneTwoClimbAPI) ProducersFor(mediaTypes []string) map[string]runtime.Pr
 
 		case "application/json":
 			result["application/json"] = o.JSONProducer
+
+		case "image/png,image/jpeg":
+			result["image/png,image/jpeg"] = o.ImagePngImageJpegProducer
 
 		}
 

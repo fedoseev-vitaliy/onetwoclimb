@@ -15,6 +15,7 @@ Package restapi OneTwoClimb API
 
     Produces:
     - application/json
+    - image/png,image/jpeg
 
 swagger:meta
 */

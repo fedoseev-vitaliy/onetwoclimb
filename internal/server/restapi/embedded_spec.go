@@ -18,9 +18,6 @@ var (
 
 func init() {
 	SwaggerJSON = json.RawMessage([]byte(`{
-  "produces": [
-    "application/json"
-  ],
   "schemes": [
     "http"
   ],
@@ -33,6 +30,9 @@ func init() {
   "paths": {
     "/colors": {
       "get": {
+        "produces": [
+          "application/json"
+        ],
         "summary": "get board colors",
         "operationId": "getBoardColors",
         "responses": {
@@ -114,6 +114,9 @@ func init() {
     },
     "/download": {
       "get": {
+        "produces": [
+          "image/png,image/jpeg"
+        ],
         "summary": "Download image",
         "operationId": "downloadFile",
         "parameters": [
@@ -252,9 +255,6 @@ func init() {
   }
 }`))
 	FlatSwaggerJSON = json.RawMessage([]byte(`{
-  "produces": [
-    "application/json"
-  ],
   "schemes": [
     "http"
   ],
@@ -267,6 +267,9 @@ func init() {
   "paths": {
     "/colors": {
       "get": {
+        "produces": [
+          "application/json"
+        ],
         "summary": "get board colors",
         "operationId": "getBoardColors",
         "responses": {
@@ -353,6 +356,9 @@ func init() {
     },
     "/download": {
       "get": {
+        "produces": [
+          "image/png,image/jpeg"
+        ],
         "summary": "Download image",
         "operationId": "downloadFile",
         "parameters": [

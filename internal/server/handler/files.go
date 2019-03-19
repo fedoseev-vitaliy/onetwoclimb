@@ -27,13 +27,13 @@ import (
 type FileType int
 
 const (
-	FILES_PNG FileType = iota
-	FILES_JPEG
+	filesPNG FileType = iota
+	filesJPEG
 )
 
 const (
-	FILE_EXTENSION_PNG  = "png"
-	FILE_EXTENSION_JPEG = "jpeg"
+	fileExtensionPNG  = "png"
+	fileExtensionJPEG = "jpeg"
 )
 
 func (h *Handler) PostUploadFile(params operations.UploadFileParams) middleware.Responder {
@@ -61,7 +61,7 @@ func (h *Handler) PostUploadFile(params operations.UploadFileParams) middleware.
 		// Draw child image.
 		draw.Draw(target, img.Bounds(), img, image.Point{0, 0}, draw.Src)
 
-		fileName, err = generateFileName(FILES_PNG)
+		fileName, err = generateFileName(filesPNG)
 		if err != nil {
 			l.WithError(err).Error("faile to generate filename")
 		}
@@ -93,7 +93,7 @@ func (h *Handler) PostUploadFile(params operations.UploadFileParams) middleware.
 		// Draw child image.
 		draw.Draw(target, img.Bounds(), img, image.Point{0, 0}, draw.Src)
 
-		fileName, err = generateFileName(FILES_JPEG)
+		fileName, err = generateFileName(filesJPEG)
 		if err != nil {
 			l.WithError(err).Error("faile to generate filename")
 		}
@@ -123,12 +123,7 @@ func (h *Handler) PostUploadFile(params operations.UploadFileParams) middleware.
 }
 
 func generateFileName(fileType FileType) (string, error) {
-	uuid, err := uuid.NewV4()
-	if err != nil {
-		return "", errors.WithStack(err)
-	}
-
-	return fmt.Sprintf("%s-%d", uuid.String(), fileType), nil
+	return fmt.Sprintf("%s-%d", uuid.NewV4().String(), fileType), nil
 }
 
 func getFileType(fileName string) (string, error) {
@@ -138,10 +133,10 @@ func getFileType(fileName string) (string, error) {
 	}
 
 	switch FileType(t) {
-	case FILES_PNG:
-		return "png", nil
-	case FILES_JPEG:
-		return FILE_EXTENSION_PNG, nil
+	case filesPNG:
+		return fileExtensionPNG, nil
+	case filesJPEG:
+		return fileExtensionJPEG, nil
 	default:
 		return "", errors.New(fmt.Sprintf("unsupported file type :%d", t))
 	}
@@ -159,7 +154,6 @@ func getFileName(id string) (string, error) {
 	return fmt.Sprintf("%s.%s", id, ft), nil
 }
 
-// todo implement download
 func (h *Handler) GetDownloadFile(params operations.DownloadFileParams) middleware.Responder {
 	if params.ID == "" {
 		return operations.NewDownloadFileBadRequest()
