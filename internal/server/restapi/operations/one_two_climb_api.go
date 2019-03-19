@@ -38,7 +38,6 @@ func NewOneTwoClimbAPI(spec *loads.Document) *OneTwoClimbAPI {
 		JSONConsumer:          runtime.JSONConsumer(),
 		MultipartformConsumer: runtime.DiscardConsumer,
 		JSONProducer:          runtime.JSONProducer(),
-		BinProducer:           runtime.ByteStreamProducer(),
 		DelBoardColorHandler: DelBoardColorHandlerFunc(func(params DelBoardColorParams) middleware.Responder {
 			return middleware.NotImplemented("operation DelBoardColor has not yet been implemented")
 		}),
@@ -86,8 +85,6 @@ type OneTwoClimbAPI struct {
 
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
-	// BinProducer registers a producer for a "application/octet-stream" mime type
-	BinProducer runtime.Producer
 
 	// DelBoardColorHandler sets the operation handler for the del board color operation
 	DelBoardColorHandler DelBoardColorHandler
@@ -164,10 +161,6 @@ func (o *OneTwoClimbAPI) Validate() error {
 
 	if o.JSONProducer == nil {
 		unregistered = append(unregistered, "JSONProducer")
-	}
-
-	if o.BinProducer == nil {
-		unregistered = append(unregistered, "BinProducer")
 	}
 
 	if o.DelBoardColorHandler == nil {
@@ -248,9 +241,6 @@ func (o *OneTwoClimbAPI) ProducersFor(mediaTypes []string) map[string]runtime.Pr
 
 		case "application/json":
 			result["application/json"] = o.JSONProducer
-
-		case "application/octet-stream":
-			result["application/octet-stream"] = o.BinProducer
 
 		}
 

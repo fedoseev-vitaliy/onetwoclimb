@@ -15,7 +15,6 @@ Package restapi OneTwoClimb API
 
     Produces:
     - application/json
-    - application/octet-stream
 
 swagger:meta
 */

@@ -15,6 +15,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-openapi/strfmt"
+
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
@@ -180,6 +182,11 @@ func (h *Handler) GetDownloadFile(params operations.DownloadFileParams) middlewa
 		l.WithError(errors.WithStack(err)).Error("failed to open file")
 		return operations.NewUploadFileInternalServerError()
 	}
-
-	return operations.NewDownloadFileOK().WithPayload(f)
+	defer f.Close()
+	fb, err := ioutil.ReadAll(f)
+	if err != nil {
+		l.WithError(errors.WithStack(err)).Error("failed to read file")
+		return operations.NewUploadFileInternalServerError()
+	}
+	return operations.NewDownloadFileOK().WithPayload(strfmt.Base64(fb))
 }

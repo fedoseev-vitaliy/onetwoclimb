@@ -92,16 +92,14 @@ paths:
     get:
       operationId: downloadFile
       summary: Download image
-      produces:
-        - application/octet-stream
       parameters:
         - $ref: "#/parameters/id"
       responses:
         200:
-          description: download file
+          description: download file OK
           schema:
             type: string
-            format: binary
+            format: byte
         400:
           description: Bad Argument
           schema:
@@ -112,7 +110,8 @@ paths:
             $ref: "#/definitions/Error"
         404:
           description: File not found
-
+          schema:
+            $ref: "#/definitions/Error"
 parameters:
   colorId:
     name: colorId

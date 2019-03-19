@@ -114,9 +114,6 @@ func init() {
     },
     "/download": {
       "get": {
-        "produces": [
-          "application/octet-stream"
-        ],
         "summary": "Download image",
         "operationId": "downloadFile",
         "parameters": [
@@ -126,10 +123,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "download file",
+            "description": "download file OK",
             "schema": {
               "type": "string",
-              "format": "binary"
+              "format": "byte"
             }
           },
           "400": {
@@ -139,7 +136,10 @@ func init() {
             }
           },
           "404": {
-            "description": "File not found"
+            "description": "File not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "500": {
             "description": "General server error",
@@ -353,9 +353,6 @@ func init() {
     },
     "/download": {
       "get": {
-        "produces": [
-          "application/octet-stream"
-        ],
         "summary": "Download image",
         "operationId": "downloadFile",
         "parameters": [
@@ -369,10 +366,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "download file",
+            "description": "download file OK",
             "schema": {
               "type": "string",
-              "format": "binary"
+              "format": "byte"
             }
           },
           "400": {
@@ -382,7 +379,10 @@ func init() {
             }
           },
           "404": {
-            "description": "File not found"
+            "description": "File not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "500": {
             "description": "General server error",

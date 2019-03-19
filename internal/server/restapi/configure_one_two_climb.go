@@ -35,8 +35,6 @@ func configureAPI(api *operations.OneTwoClimbAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	api.BinProducer = runtime.ByteStreamProducer()
-
 	api.DelBoardColorHandler = operations.DelBoardColorHandlerFunc(func(params operations.DelBoardColorParams) middleware.Responder {
 		return middleware.NotImplemented("operation .DelBoardColor has not yet been implemented")
 	})

@@ -6,10 +6,10 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"io"
 	"net/http"
 
 	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/strfmt"
 
 	models "github.com/onetwoclimb/internal/server/models"
 )
@@ -17,7 +17,7 @@ import (
 // DownloadFileOKCode is the HTTP code returned for type DownloadFileOK
 const DownloadFileOKCode int = 200
 
-/*DownloadFileOK download file
+/*DownloadFileOK download file OK
 
 swagger:response downloadFileOK
 */
@@ -26,7 +26,7 @@ type DownloadFileOK struct {
 	/*
 	  In: Body
 	*/
-	Payload io.ReadCloser `json:"body,omitempty"`
+	Payload strfmt.Base64 `json:"body,omitempty"`
 }
 
 // NewDownloadFileOK creates DownloadFileOK with default headers values
@@ -36,13 +36,13 @@ func NewDownloadFileOK() *DownloadFileOK {
 }
 
 // WithPayload adds the payload to the download file o k response
-func (o *DownloadFileOK) WithPayload(payload io.ReadCloser) *DownloadFileOK {
+func (o *DownloadFileOK) WithPayload(payload strfmt.Base64) *DownloadFileOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the download file o k response
-func (o *DownloadFileOK) SetPayload(payload io.ReadCloser) {
+func (o *DownloadFileOK) SetPayload(payload strfmt.Base64) {
 	o.Payload = payload
 }
 
@@ -109,6 +109,11 @@ const DownloadFileNotFoundCode int = 404
 swagger:response downloadFileNotFound
 */
 type DownloadFileNotFound struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
 }
 
 // NewDownloadFileNotFound creates DownloadFileNotFound with default headers values
@@ -117,12 +122,27 @@ func NewDownloadFileNotFound() *DownloadFileNotFound {
 	return &DownloadFileNotFound{}
 }
 
+// WithPayload adds the payload to the download file not found response
+func (o *DownloadFileNotFound) WithPayload(payload *models.Error) *DownloadFileNotFound {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the download file not found response
+func (o *DownloadFileNotFound) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *DownloadFileNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(404)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
 
 // DownloadFileInternalServerErrorCode is the HTTP code returned for type DownloadFileInternalServerError
