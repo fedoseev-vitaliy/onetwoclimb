@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/onetwoclimb/cmd/config"
 	"github.com/onetwoclimb/internal/server/restapi/operations"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestGetColorsCount(t *testing.T) {

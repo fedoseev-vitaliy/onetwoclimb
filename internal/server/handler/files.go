@@ -1,12 +1,7 @@
 package handler
 
 import (
-	"bytes"
 	"fmt"
-	"image"
-	"image/draw"
-	"image/jpeg"
-	"image/png"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -15,9 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/go-openapi/strfmt"
-
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/strfmt"
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 
@@ -50,17 +44,6 @@ func (h *Handler) PostUploadFile(params operations.UploadFileParams) middleware.
 	ct := http.DetectContentType(ib)
 	switch {
 	case strings.Contains(ct, "image/png"):
-		img, err := png.Decode(bytes.NewReader(ib))
-		if err != nil {
-			l.WithError(errors.WithStack(err)).Error("failed to decode png file")
-			return operations.NewUploadFileInternalServerError()
-		}
-
-		// Prepare parent image where we want to position child image.
-		target := image.NewRGBA(img.Bounds())
-		// Draw child image.
-		draw.Draw(target, img.Bounds(), img, image.Point{0, 0}, draw.Src)
-
 		fileName, err = generateFileName(filesPNG)
 		if err != nil {
 			l.WithError(err).Error("faile to generate filename")
@@ -73,9 +56,8 @@ func (h *Handler) PostUploadFile(params operations.UploadFileParams) middleware.
 			return operations.NewUploadFileInternalServerError()
 		}
 
-		err = png.Encode(f, target)
-		if err != nil {
-			l.WithError(errors.WithStack(err)).Error("failed to save file")
+		if err := EncodePNG(ib, f); err != nil {
+			l.WithError(errors.WithStack(err)).Error("failed to save jpeg file")
 			f.Close()
 			if err := os.Remove(filePath); err != nil {
 				l.WithError(errors.WithStack(err)).Errorf("failed to delete file by path: %s", filePath)
@@ -83,16 +65,6 @@ func (h *Handler) PostUploadFile(params operations.UploadFileParams) middleware.
 			return operations.NewUploadFileInternalServerError()
 		}
 	case strings.Contains(ct, "image/jpeg"):
-		img, err := jpeg.Decode(bytes.NewReader(ib))
-		if err != nil {
-			l.WithError(errors.WithStack(err)).Error("failed to decode png file")
-			return operations.NewUploadFileInternalServerError()
-		}
-		// Prepare parent image where we want to position child image.
-		target := image.NewRGBA(img.Bounds())
-		// Draw child image.
-		draw.Draw(target, img.Bounds(), img, image.Point{0, 0}, draw.Src)
-
 		fileName, err = generateFileName(filesJPEG)
 		if err != nil {
 			l.WithError(err).Error("faile to generate filename")
@@ -105,9 +77,8 @@ func (h *Handler) PostUploadFile(params operations.UploadFileParams) middleware.
 			return operations.NewUploadFileInternalServerError()
 		}
 
-		err = jpeg.Encode(f, target, nil)
-		if err != nil {
-			l.WithError(errors.WithStack(err)).Error("failed to save file")
+		if err := EncodeJPEG(ib, f); err != nil {
+			l.WithError(errors.WithStack(err)).Error("failed to save jpeg file")
 			f.Close()
 			if err := os.Remove(filePath); err != nil {
 				l.WithError(errors.WithStack(err)).Errorf("failed to delete file by path: %s", filePath)
@@ -120,6 +91,39 @@ func (h *Handler) PostUploadFile(params operations.UploadFileParams) middleware.
 	}
 
 	return operations.NewUploadFileOK().WithPayload(&operations.UploadFileOKBody{ID: &fileName})
+}
+
+func (h *Handler) GetDownloadFile(params operations.DownloadFileParams) middleware.Responder {
+	if params.ID == "" {
+		return operations.NewDownloadFileBadRequest()
+	}
+
+	fileName, err := getFileName(params.ID)
+	if err != nil {
+		l.WithError(errors.WithStack(err)).Error("failed to get file name")
+		return operations.NewDownloadFileBadRequest()
+	}
+
+	filePath := filepath.Join(h.config.FilesDst, fileName)
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+
+		return operations.NewDownloadFileNotFound()
+	}
+
+	f, err := os.Open(filePath)
+	if err != nil {
+		l.WithError(errors.WithStack(err)).Error("failed to open file")
+		return operations.NewUploadFileInternalServerError()
+	}
+	defer f.Close()
+
+	fb, err := ioutil.ReadAll(f)
+	if err != nil {
+		l.WithError(errors.WithStack(err)).Error("failed to read file")
+		return operations.NewUploadFileInternalServerError()
+	}
+
+	return operations.NewDownloadFileOK().WithPayload(strfmt.Base64(fb))
 }
 
 func generateFileName(fileType FileType) (string, error) {
@@ -152,35 +156,4 @@ func getFileName(id string) (string, error) {
 	}
 
 	return fmt.Sprintf("%s.%s", id, ft), nil
-}
-
-func (h *Handler) GetDownloadFile(params operations.DownloadFileParams) middleware.Responder {
-	if params.ID == "" {
-		return operations.NewDownloadFileBadRequest()
-	}
-
-	fileName, err := getFileName(params.ID)
-	if err != nil {
-		l.WithError(errors.WithStack(err)).Error("failed to get file name")
-		return operations.NewDownloadFileBadRequest()
-	}
-
-	filePath := filepath.Join(h.config.FilesDst, fileName)
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-
-		return operations.NewDownloadFileNotFound()
-	}
-
-	f, err := os.Open(filePath)
-	if err != nil {
-		l.WithError(errors.WithStack(err)).Error("failed to open file")
-		return operations.NewUploadFileInternalServerError()
-	}
-	defer f.Close()
-	fb, err := ioutil.ReadAll(f)
-	if err != nil {
-		l.WithError(errors.WithStack(err)).Error("failed to read file")
-		return operations.NewUploadFileInternalServerError()
-	}
-	return operations.NewDownloadFileOK().WithPayload(strfmt.Base64(fb))
 }
