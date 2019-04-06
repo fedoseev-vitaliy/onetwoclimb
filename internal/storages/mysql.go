@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"syscall"
 
+	"github.com/pkg/errors"
+
 	"github.com/go-sql-driver/mysql"
 	"github.com/sirupsen/logrus"
 )
@@ -38,6 +40,10 @@ func New(conf *Config) (*MySQL, error) {
 	s := &MySQL{}
 	if s.db, err = sql.Open("mysql", c.FormatDSN()); err != nil {
 		return nil, fmt.Errorf("failed to open MySQL DSN: %v", err)
+	}
+
+	if err := s.db.Ping(); err != nil {
+		return nil, errors.WithStack(err)
 	}
 
 	if conf.MaxOpenConns != 0 {

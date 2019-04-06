@@ -49,7 +49,7 @@ func (h *Handler) PostUploadFile(params operations.UploadFileParams) middleware.
 			l.WithError(err).Error("faile to generate filename")
 		}
 
-		filePath := fmt.Sprintf("%s/%s.png", h.config.FilesDst, fileName)
+		filePath := fmt.Sprintf("%s/%s.png", h.config.StaticDst, fileName)
 		f, err := os.Create(filePath)
 		if err != nil {
 			l.WithError(errors.WithStack(err)).Error("failed to create png file")
@@ -70,7 +70,7 @@ func (h *Handler) PostUploadFile(params operations.UploadFileParams) middleware.
 			l.WithError(err).Error("faile to generate filename")
 		}
 
-		filePath := fmt.Sprintf("%s/%s.jpeg", h.config.FilesDst, fileName)
+		filePath := fmt.Sprintf("%s/%s.jpeg", h.config.StaticDst, fileName)
 		f, err := os.Create(filePath)
 		if err != nil {
 			l.WithError(errors.WithStack(err)).Error("failed to create png file")
@@ -104,7 +104,7 @@ func (h *Handler) GetDownloadFile(params operations.DownloadFileParams) middlewa
 		return operations.NewDownloadFileBadRequest()
 	}
 
-	filePath := filepath.Join(h.config.FilesDst, fileName)
+	filePath := filepath.Join(h.config.StaticDst, fileName)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 
 		return operations.NewDownloadFileNotFound()

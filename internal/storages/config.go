@@ -14,7 +14,7 @@ type Config struct {
 
 func (c *Config) Flags(name string) *pflag.FlagSet {
 	f := pflag.NewFlagSet(name, pflag.PanicOnError)
-	f.StringVar(&c.Host, "db_host", "127.0.0.1", "")
+	f.StringVar(&c.Host, "db_host", "0.0.0.0", "")
 	f.Uint16Var(&c.Port, "db_port", 3306, "")
 	f.StringVar(&c.User, "db_user", "root", "")
 	f.StringVar(&c.Password, "db_password", "", "[secret]")

@@ -13,7 +13,7 @@ import (
 type Config struct {
 	ServerConfig
 	DB          storages.Config
-	FilesDst    string
+	StaticDst   string
 	MaxFileSize int
 }
 
@@ -35,9 +35,9 @@ type ServerConfig struct {
 func (c *Config) Flags() *pflag.FlagSet {
 	f := pflag.NewFlagSet("APIConfig", pflag.PanicOnError)
 
-	f.StringVar(&c.Host, "host", "127.0.0.1", "ip")
-	f.IntVar(&c.Port, "port", 8081, "port")
-	f.StringVar(&c.FilesDst, "filedst", "/Users/fedoseevvt/go/src/github.com/onetwoclimb", "path to store files")
+	f.StringVar(&c.Host, "host", "0.0.0.0", "ip")
+	f.IntVar(&c.Port, "port", 8000, "port")
+	f.StringVar(&c.StaticDst, "static_dst", "/Users/fedoseevvt/go/src/github.com/onetwoclimb", "path to static files")
 	f.IntVar(&c.MaxFileSize, "max_file_size", 5000000, "max image size to upload")
 	f.StringVar(&c.Mode, "mode", ReleaseMode, "release,debug,test")
 	f.AddFlagSet(c.DB.Flags("mysql"))
@@ -49,7 +49,7 @@ func (c *Config) Flags() *pflag.FlagSet {
 }
 
 func (c *Config) Validate() error {
-	if _, err := os.Stat(c.FilesDst); os.IsNotExist(err) {
+	if _, err := os.Stat(c.StaticDst); os.IsNotExist(err) {
 		return errors.WithStack(err)
 	}
 	return nil
