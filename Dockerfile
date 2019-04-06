@@ -13,12 +13,12 @@ RUN make build && \
     cp ./onetwoclimb /usr/local/bin/ && \
     rm -rf /go/src/github.com
 
-#FROM alpine
-#COPY --from=builder /usr/local/bin /
-#COPY onetwoclimb /usr/local/bin
-
-WORKDIR /usr/local/bin
-RUN mkdir /static
+# TODO make multistage build
+#FROM alpine:latest
+#WORKDIR /root/
+#RUN apk --no-cache add ca-certificates && mkdir /static
+#COPY --from=builder /usr/local/bin .
+#RUN pwd && ls -v
 
 ENV BIND 0.0.0.0:80
 EXPOSE 80
