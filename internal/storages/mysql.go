@@ -34,11 +34,13 @@ func New(conf *Config) (*MySQL, error) {
 	c.DBName = conf.Database
 	c.User = conf.User
 	c.Passwd = conf.Password
+	c.Net = "tcp"
 	c.Addr = fmt.Sprintf("%s:%d", conf.Host, conf.Port)
 	c.ParseTime = true
 
 	s := &MySQL{}
-	if s.db, err = sql.Open("mysql", c.FormatDSN()); err != nil {
+	dsn := c.FormatDSN()
+	if s.db, err = sql.Open("mysql", dsn); err != nil {
 		return nil, fmt.Errorf("failed to open MySQL DSN: %v", err)
 	}
 

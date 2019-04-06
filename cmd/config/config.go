@@ -36,7 +36,7 @@ func (c *Config) Flags() *pflag.FlagSet {
 	f := pflag.NewFlagSet("APIConfig", pflag.PanicOnError)
 
 	f.StringVar(&c.Host, "host", "0.0.0.0", "ip")
-	f.IntVar(&c.Port, "port", 8000, "port")
+	f.IntVar(&c.Port, "port", 80, "port")
 	f.StringVar(&c.StaticDst, "static_dst", "/Users/fedoseevvt/go/src/github.com/onetwoclimb", "path to static files")
 	f.IntVar(&c.MaxFileSize, "max_file_size", 5000000, "max image size to upload")
 	f.StringVar(&c.Mode, "mode", ReleaseMode, "release,debug,test")

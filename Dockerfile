@@ -19,6 +19,7 @@ RUN make build && \
 #WORKDIR /usr/local/bin
 #
 #RUN ls
+RUN mkdir /static
 
 ENV BIND 0.0.0.0:80
 EXPOSE 80
