@@ -14,11 +14,10 @@ RUN make build && \
     rm -rf /go/src/github.com
 
 #FROM alpine
-#COPY --from=builder /usr/local/bin /usr/local/bin
-#
-#WORKDIR /usr/local/bin
-#
-#RUN ls
+#COPY --from=builder /usr/local/bin /
+#COPY onetwoclimb /usr/local/bin
+
+WORKDIR /usr/local/bin
 RUN mkdir /static
 
 ENV BIND 0.0.0.0:80
