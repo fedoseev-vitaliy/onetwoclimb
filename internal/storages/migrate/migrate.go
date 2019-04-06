@@ -2,10 +2,13 @@ package migrate
 
 import (
 	"database/sql"
-	"flag"
 	"log"
 	"os"
 	"time"
+
+	"github.com/spf13/pflag"
+
+	"github.com/onetwoclimb/internal/utils"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/onetwoclimb/internal/storages"
@@ -22,12 +25,21 @@ type statusRow struct {
 type MigrationConfig struct {
 	Mode  string
 	MySQL storages.Config
-	Limit int
+	Step  int
+}
+
+func (mc *MigrationConfig) Flags() *pflag.FlagSet {
+	f := pflag.NewFlagSet("MigrationCfg", pflag.PanicOnError)
+
+	f.StringVar(&mc.Mode, "mode", "", "db mode release,debug,test")
+	f.AddFlagSet(mc.MySQL.Flags("my_sql"))
+	f.IntVar(&mc.Step, "migration_step", 0, "migration step")
+	return f
 }
 
 func migrateCommandHandler(migrationTable string, c *MigrationConfig, f func() []*migrate.Migration) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
-		flag.Parse()
+		utils.BindEnv(cmd)
 
 		mySql, err := storages.New(&c.MySQL)
 		if err != nil {
@@ -37,9 +49,9 @@ func migrateCommandHandler(migrationTable string, c *MigrationConfig, f func() [
 		migrate.SetTable(migrationTable)
 
 		if cmd.Name() == "up" {
-			doMigrate(mySql.DB(), migrate.Up, c.Limit, f)
+			doMigrate(mySql.DB(), migrate.Up, c.Step, f)
 		} else if cmd.Name() == "down" {
-			doMigrate(mySql.DB(), migrate.Down, c.Limit, f)
+			doMigrate(mySql.DB(), migrate.Down, c.Step, f)
 		} else {
 			getMigrateStatus(mySql.DB(), f)
 		}
@@ -143,7 +155,7 @@ func GetMigrationCommand(migrationTable string, config *MigrationConfig, f func(
 
 	migrateCmd.PersistentFlags().StringVar(&config.Mode, "mode", "debug", "release,debug,test")
 	migrateCmd.PersistentFlags().AddFlagSet(config.MySQL.Flags("mysql"))
-	migrateCmd.PersistentFlags().IntVar(&config.Limit, "limit", 0, "Maximum migration steps (--limit 0)")
+	migrateCmd.PersistentFlags().IntVar(&config.Step, "limit", 0, "Maximum migration steps (--limit 0)")
 
 	return migrateCmd
 }

@@ -1,7 +1,7 @@
 package server
 
 import (
-	"flag"
+	"github.com/onetwoclimb/internal/utils"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime/middleware"
@@ -29,7 +29,7 @@ var Cmd = &cobra.Command{
 	Use:   "server",
 	Short: "run server",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		flag.Parse()
+		utils.BindEnv(cmd)
 
 		if err := cfg.Validate(); err != nil {
 			return errors.Wrap(err, "storage folder doesn't exists")

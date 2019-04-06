@@ -70,7 +70,7 @@ fmt:
 
 build:
 	@echo $(GREEN_COLOR)[build]$(DEFAULT_COLOR)
-	$(GOBUILD) -o $(BINARY)
+	 $(GOBUILD) --tags static -o $(BINARY)
 
 version:
 	@echo $(GREEN_COLOR)[version]$(DEFAULT_COLOR)
