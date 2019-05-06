@@ -1,0 +1,98 @@
+# github.com/PuerkitoBio/purell v1.1.1
+github.com/PuerkitoBio/purell
+# github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578
+github.com/PuerkitoBio/urlesc
+# github.com/apex/log v1.1.0
+github.com/apex/log
+# github.com/asaskevich/govalidator v0.0.0-20180720115003-f9ffefc3facf
+github.com/asaskevich/govalidator
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
+# github.com/docker/go-units v0.3.3
+github.com/docker/go-units
+# github.com/facebookgo/stack v0.0.0-20160209184415-751773369052
+github.com/facebookgo/stack
+# github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
+github.com/globalsign/mgo/bson
+github.com/globalsign/mgo/internal/json
+# github.com/go-openapi/analysis v0.19.0
+github.com/go-openapi/analysis
+github.com/go-openapi/analysis/internal
+# github.com/go-openapi/errors v0.19.0
+github.com/go-openapi/errors
+# github.com/go-openapi/jsonpointer v0.18.0
+github.com/go-openapi/jsonpointer
+# github.com/go-openapi/jsonreference v0.18.0
+github.com/go-openapi/jsonreference
+# github.com/go-openapi/loads v0.19.0
+github.com/go-openapi/loads
+# github.com/go-openapi/runtime v0.0.0-20190303163836-25a2b415dd47
+github.com/go-openapi/runtime/middleware
+github.com/go-openapi/runtime
+github.com/go-openapi/runtime/flagext
+github.com/go-openapi/runtime/security
+github.com/go-openapi/runtime/logger
+github.com/go-openapi/runtime/middleware/denco
+github.com/go-openapi/runtime/middleware/header
+github.com/go-openapi/runtime/middleware/untyped
+# github.com/go-openapi/spec v0.19.0
+github.com/go-openapi/spec
+# github.com/go-openapi/strfmt v0.17.2
+github.com/go-openapi/strfmt
+# github.com/go-openapi/swag v0.19.0
+github.com/go-openapi/swag
+# github.com/go-openapi/validate v0.18.0
+github.com/go-openapi/validate
+# github.com/go-sql-driver/mysql v1.4.1
+github.com/go-sql-driver/mysql
+# github.com/inconshreveable/mousetrap v1.0.0
+github.com/inconshreveable/mousetrap
+# github.com/konsorten/go-windows-terminal-sequences v1.0.2
+github.com/konsorten/go-windows-terminal-sequences
+# github.com/mailru/easyjson v0.0.0-20190312143242-1de009706dbe
+github.com/mailru/easyjson/jlexer
+github.com/mailru/easyjson/jwriter
+github.com/mailru/easyjson/buffer
+# github.com/mattn/go-runewidth v0.0.4
+github.com/mattn/go-runewidth
+# github.com/mitchellh/mapstructure v1.1.2
+github.com/mitchellh/mapstructure
+# github.com/olekukonko/tablewriter v0.0.1
+github.com/olekukonko/tablewriter
+# github.com/pkg/errors v0.8.1
+github.com/pkg/errors
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
+# github.com/rubenv/sql-migrate v0.0.0-20190212093014-1007f53448d7
+github.com/rubenv/sql-migrate
+github.com/rubenv/sql-migrate/sqlparse
+# github.com/satori/go.uuid v1.2.0
+github.com/satori/go.uuid
+# github.com/sirupsen/logrus v1.4.0
+github.com/sirupsen/logrus
+# github.com/spf13/cobra v0.0.3
+github.com/spf13/cobra
+# github.com/spf13/pflag v1.0.3
+github.com/spf13/pflag
+# github.com/stretchr/testify v1.3.0
+github.com/stretchr/testify/assert
+# golang.org/x/crypto v0.0.0-20190313024323-a1f597ede03a
+golang.org/x/crypto/ssh/terminal
+# golang.org/x/net v0.0.0-20190318221613-d196dffd7c2b
+golang.org/x/net/netutil
+golang.org/x/net/idna
+# golang.org/x/sys v0.0.0-20190318195719-6c81ef8f67ca
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+# golang.org/x/text v0.3.0
+golang.org/x/text/unicode/norm
+golang.org/x/text/width
+golang.org/x/text/secure/bidirule
+golang.org/x/text/unicode/bidi
+golang.org/x/text/transform
+# google.golang.org/appengine v1.4.0
+google.golang.org/appengine/cloudsql
+# gopkg.in/gorp.v1 v1.7.2
+gopkg.in/gorp.v1
+# gopkg.in/yaml.v2 v2.2.2
+gopkg.in/yaml.v2
